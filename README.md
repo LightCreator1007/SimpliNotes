@@ -1,0 +1,2 @@
+# SimpliNotes
+A MERN project
