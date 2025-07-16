@@ -1,7 +1,8 @@
-const express = require("express");
-const connectDb = require("./db/dbConnect.js");
-const app = require("./app.js");
-const mongoose = require("mongoose");
+import express from "express";
+import connectDb from "./db/dbConnect.js";
+import app from "./app.js";
+import mongoose from "mongoose";
+
 require("dotenv").config({
   path: "./.env",
 });
