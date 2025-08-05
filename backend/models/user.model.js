@@ -15,7 +15,6 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: [true, "Password is required"],
-    unique: true,
   },
   avatar: {
     type: String,
@@ -27,13 +26,16 @@ const userSchema = new Schema({
     lowercase: true,
     unique: true,
   },
+  refreshToken: {
+    type: String,
+  },
 });
 
 /*------- hash the incoming password only if it is changed -------*/
 
 userSchema.pre("save", async function (next) {
   try {
-    if (!this.isModified("password")) return next();
+    if (!this.isModified("password")) return next(); // we dont use arrow functions coz this would not work as expected here.
     this.password = await bcrypt.hash(this.password, 10);
     next();
   } catch (err) {
@@ -41,7 +43,40 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-userSchema.methods.isPasswordCorrect();
+userSchema.methods.isPasswordCorrect = async function (password) {
+  try {
+    return await bcrypt.compare(password, this.password);
+  } catch (err) {
+    console.log("Error matching passwords: ", err);
+    return false;
+  }
+};
+
+userSchema.methods.generateAccessToken = async function () {
+  return jwt.sign(
+    {
+      id: this._id,
+      email: this.email,
+      username: this.userName,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: "15m",
+    }
+  );
+};
+
+userSchema.methods.generateRefreshToken = async function () {
+  return jwt.sign(
+    {
+      id: this._id,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: "10d",
+    }
+  );
+};
 
 const User = mongoose.model("User", userSchema);
 

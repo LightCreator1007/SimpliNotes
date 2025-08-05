@@ -8,12 +8,6 @@ const notesSchema = new Schema(
       ref: "User",
       required: true,
     },
-    attachments: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "File",
-      },
-    ],
     content: {
       type: String,
       default: "",
