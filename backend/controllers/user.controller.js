@@ -1,4 +1,3 @@
-import { access } from "fs";
 import User from "../models/user.model.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
@@ -20,7 +19,7 @@ const generateAccessAndRefreshToken = async (userId) => {
 
 //register user
 
-const registerUser = asyncHandler(async (res, req) => {
+const registerUser = asyncHandler(async (req, res) => {
   //get all details from the user
   const { username, email, password } = req.body;
   //check to see if any field is empty
@@ -37,6 +36,8 @@ const registerUser = asyncHandler(async (res, req) => {
   //get avatar
   const avatarLocalPath = req.files?.avatar[0]?.path;
   if (!avatarLocalPath) {
+    console.log("fucked up");
+
     throw new ApiError(400, "avatar is required");
   }
   //upload avatar on cloudinary
@@ -62,8 +63,11 @@ const registerUser = asyncHandler(async (res, req) => {
 });
 
 //log in user
-const login = asyncHandler(async (res, req) => {
-  const { email, username, password } = req.body;
+const login = asyncHandler(async (req, res) => {
+  console.log("====Debug Info====");
+  console.log(req.body);
+  console.log("==================");
+  const { username, email, password } = req.body;
   if (!username & !email) {
     throw new ApiError(400, "username and emailId is required");
   }

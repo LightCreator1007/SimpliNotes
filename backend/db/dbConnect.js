@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 mongoose.connection.on("connected", () => {
   console.log("connection to database established");
@@ -32,4 +32,4 @@ const connectDb = async () => {
   }
 };
 
-module.exports = connectDb;
+export default connectDb;

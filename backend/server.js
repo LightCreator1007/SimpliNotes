@@ -2,8 +2,9 @@ import express from "express";
 import connectDb from "./db/dbConnect.js";
 import app from "./app.js";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 
-require("dotenv").config({
+dotenv.config({
   path: "./.env",
 });
 
