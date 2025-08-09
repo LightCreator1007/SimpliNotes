@@ -2,11 +2,20 @@ import express from "express";
 import userRouter from "./routes/user.route.js";
 import notesRouter from "./routes/notes.route.js";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 const app = express();
 
 app.use(express.static("./uploads")); //all uploads will be treated as  static assets
 app.use(express.urlencoded({ extended: false })); //parse from data and add it in request body
 app.use(express.json()); //parse json and add it in request body
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
+  })
+);
 
 app.use(cookieParser());
 
