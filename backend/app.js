@@ -1,5 +1,6 @@
 import express from "express";
 import userRouter from "./routes/user.route.js";
+import notesRouter from "./routes/notes.route.js";
 import cookieParser from "cookie-parser";
 const app = express();
 
@@ -11,5 +12,6 @@ app.use(cookieParser());
 
 //routes
 app.use("/user", userRouter);
+app.use("/notes", notesRouter);
 
 export default app;

@@ -17,11 +17,10 @@ const notesSchema = new Schema(
       default: "",
       required: true,
     },
-    tags: [{ type: String }],
   },
   { timestamps: true }
 );
 
 const Notes = mongoose.model("Notes", notesSchema);
 
-module.exports = { Notes };
+export default Notes;
