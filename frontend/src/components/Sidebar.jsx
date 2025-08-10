@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FileText, Plus, Search, X, Clock, Edit3 } from "lucide-react";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+import apiClient from "../utils/apiClient.js";
 
 export default function Sidebar({ setNote }) {
   const [notes, setNotes] = useState([]);
@@ -13,21 +12,8 @@ export default function Sidebar({ setNote }) {
     const fetchNotes = async () => {
       setLoading(true);
       setError(null);
-
       try {
-        const res = await fetch(`${API_URL}/notes/`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
-
-        if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
-        }
-
-        const data = await res.json();
+        const data = await apiClient("/notes/", { method: "GET" });
         setNotes(data);
       } catch (err) {
         console.error("Failed to fetch notes:", err);
@@ -60,7 +46,7 @@ export default function Sidebar({ setNote }) {
   };
 
   return (
-    <div className="h-full flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 rounded-lg shadow-md">
+    <div className="h-4/5 flex flex-col bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md ml-2 mt-6">
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center space-x-2">
           <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />

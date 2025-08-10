@@ -36,14 +36,12 @@ export default function SignUp() {
   const [success, setSuccess] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    // Clear field error when user starts typing
     if (fieldErrors[name]) {
       setFieldErrors((prev) => ({
         ...prev,
@@ -51,23 +49,20 @@ export default function SignUp() {
       }));
     }
   };
-
-  // Handle avatar selection
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validate file type
       if (!file.type.startsWith("image/")) {
         setError("Please select an image file");
         return;
       }
-      // Validate file size (max 5MB)
+
       if (file.size > 5 * 1024 * 1024) {
         setError("Image size should be less than 5MB");
         return;
       }
       setAvatar(file);
-      // Create preview
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatarPreview(reader.result);
@@ -77,7 +72,6 @@ export default function SignUp() {
     }
   };
 
-  // Remove avatar
   const removeAvatar = () => {
     setAvatar(null);
     setAvatarPreview(null);
@@ -86,7 +80,6 @@ export default function SignUp() {
     }
   };
 
-  // Validate form
   const validateForm = () => {
     const errors = {};
 
@@ -118,7 +111,6 @@ export default function SignUp() {
     return Object.keys(errors).length === 0;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -130,13 +122,11 @@ export default function SignUp() {
     setError("");
 
     try {
-      // Create FormData for multipart/form-data
       const formDataToSend = new FormData();
       formDataToSend.append("username", formData.username);
       formDataToSend.append("email", formData.email);
       formDataToSend.append("password", formData.password);
 
-      // Add avatar if selected
       if (avatar) {
         formDataToSend.append("avatar", avatar);
       }
@@ -144,7 +134,6 @@ export default function SignUp() {
       const response = await fetch(`${API_URL}/user/register`, {
         method: "POST",
         body: formDataToSend,
-        // Don't set Content-Type header - browser will set it with boundary for FormData
       });
 
       const data = await response.json();
@@ -152,7 +141,6 @@ export default function SignUp() {
       if (response.ok) {
         setSuccess(true);
         setError("");
-        // Redirect to login after 2 seconds
         setTimeout(() => {
           navigate("/login");
         }, 2000);
@@ -170,7 +158,6 @@ export default function SignUp() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-2 mb-2">
             <div className="w-10 h-10 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center">
@@ -185,7 +172,6 @@ export default function SignUp() {
           </p>
         </div>
 
-        {/* Signup Form */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
           {success && (
             <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center">
@@ -206,7 +192,6 @@ export default function SignUp() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Avatar Upload */}
             <div className="flex flex-col items-center">
               <div className="relative">
                 <div className="w-24 h-24 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
@@ -302,8 +287,6 @@ export default function SignUp() {
                 </p>
               )}
             </div>
-
-            {/* Password Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Password
@@ -340,8 +323,6 @@ export default function SignUp() {
                 </p>
               )}
             </div>
-
-            {/* Confirm Password Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Confirm Password
@@ -378,8 +359,6 @@ export default function SignUp() {
                 </p>
               )}
             </div>
-
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
@@ -395,8 +374,6 @@ export default function SignUp() {
               )}
             </button>
           </form>
-
-          {/* Login Link */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Already have an account?{" "}

@@ -10,6 +10,8 @@ import {
   FileText,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import fetchUser from "../utils/fetchUser.js";
+import apiClient from "../utils/apiClient.js";
 
 export default function Header({
   isDarkMode,
@@ -20,13 +22,16 @@ export default function Header({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const [user, setUser] = useState({
+    username: "John Doe",
+    email: "johndoe@example.com",
+    avatar: "",
+  });
 
-  // Mock user data
-  const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
-    avatar: null,
-  };
+  useEffect(() => {
+    const newUser = fetchUser();
+    setUser(newUser);
+  }, []);
 
   const getInitials = (name = "") =>
     name
@@ -56,7 +61,8 @@ export default function Header({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    apiClient("/user/logout", { method: "POST" });
     console.log("Sign out clicked");
     setIsDropdownOpen(false);
     navigate("/");
@@ -70,7 +76,6 @@ export default function Header({
 
   return (
     <div className="flex items-center justify-between max-w-screen p-6 bg-white dark:bg-gray-900 shadow-md dark:shadow-gray-800 h-20 pr-20 pl-20 transition-colors duration-300">
-      {/* Sidebar toggle */}
       <button
         className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 focus:outline-none"
         onClick={toggleSidebar}
@@ -110,16 +115,16 @@ export default function Header({
             {user.avatar ? (
               <img
                 src={user.avatar}
-                alt={user.name}
+                alt={user.username}
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (
-              getInitials(user.name)
+              getInitials(user.username)
             )}
           </div>
           <div className="flex items-center space-x-1">
             <span className="text-gray-700 dark:text-gray-300 font-medium text-sm hidden sm:block transition-colors duration-300">
-              {user.name}
+              {user.username}
             </span>
             <ChevronDown
               className={`w-4 h-4 text-gray-500 dark:text-gray-400 transition-transform duration-200 ${
@@ -138,16 +143,16 @@ export default function Header({
                   {user.avatar ? (
                     <img
                       src={user.avatar}
-                      alt={user.name}
+                      alt={user.username}
                       className="w-full h-full rounded-full object-cover"
                     />
                   ) : (
-                    getInitials(user.name)
+                    getInitials(user.username)
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
-                    {user.name}
+                    {user.username}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                     {user.email}
@@ -156,9 +161,7 @@ export default function Header({
               </div>
             </div>
 
-            {/* Actions */}
             <div className="py-2">
-              {/* Dark mode toggle */}
               <button
                 onClick={toggleDarkMode}
                 className="flex items-center justify-between w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150"

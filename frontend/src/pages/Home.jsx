@@ -19,7 +19,7 @@ export default function Home() {
   }, [isDarkMode]);
 
   return (
-    <div className="flex flex-col min-h-screen gap-3 bg-gray-50 scroll-smooth">
+    <div className="flex flex-col min-h-screen bg-gray-50 scroll-smooth dark:bg-gray-900">
       <Header
         isSidebar={isSidebar}
         setIsSidebar={setIsSidebar}
@@ -34,8 +34,8 @@ export default function Home() {
         >
           <Sidebar setNote={setNote} />
         </div>
-        <div className="w-full mas-w-4xl">
-          <Editor note={note} setNote={setNote} />
+        <div className="w-full mas-w-4xl mt-1">
+          <Editor note={note} setNote={setNote} isDarkMode={isDarkMode} />
         </div>
       </main>
     </div>
