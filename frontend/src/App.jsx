@@ -3,6 +3,7 @@ import LandingPage from "./pages/LandingPage.jsx";
 import Login from "./pages/Login.jsx";
 import Home from "./pages/Home.jsx";
 import Account from "./pages/Account.jsx";
+import Signup from "./pages/Signup.jsx";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/home" element={<Home />} />
         <Route path="/account" element={<Account />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </Router>
   );

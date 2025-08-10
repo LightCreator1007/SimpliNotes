@@ -20,46 +20,46 @@ const generateAccessAndRefreshToken = async (userId) => {
 //register user
 
 const registerUser = asyncHandler(async (req, res) => {
-  //get all details from the user
-  const { username, email, password } = req.body;
-  //check to see if any field is empty
-  if ([username, email, password].some((fields) => fields.trim() === "")) {
-    throw new ApiError(400, "All fields are required");
-  }
-  //check to see if the user already exists
-  const existingUser = await User.findOne({
-    $or: [{ username }, { email }],
-  });
-  if (existingUser) {
-    throw new ApiError(409, "User already exists");
-  }
-  //get avatar
-  const avatarLocalPath = req.files?.avatar[0]?.path;
-  if (!avatarLocalPath) {
-    console.log("fucked up");
+  try {
+    const { username, email, password } = req.body;
+    if ([username, email, password].some((fields) => fields.trim() === "")) {
+      throw new ApiError(400, "All fields are required");
+    }
+    const existingUser = await User.findOne({
+      $or: [{ username }, { email }],
+    });
+    if (existingUser) {
+      throw new ApiError(409, "User already exists");
+    }
+    const avatarLocalPath = req.files?.avatar[0]?.path;
+    if (!avatarLocalPath) {
+      console.log("fucked up");
 
-    throw new ApiError(400, "avatar is required");
+      throw new ApiError(400, "avatar is required");
+    }
+    const avatar = await uploadOnCloudinary(avatarLocalPath);
+    if (!avatar) {
+      throw new ApiError(400, "upload to cloudinary failed");
+    }
+    const user = await User.create({
+      username,
+      avatar: avatar.url,
+      password,
+      email,
+    });
+    const createdUser = await User.findById(user._id).select(
+      "-password -refreshToken"
+    );
+    if (!createdUser) {
+      throw new ApiError(400, "Failed to create user");
+    }
+    return res
+      .status(201)
+      .json(new ApiResponse(201, createdUser, "Created User Successfully"));
+  } catch (error) {
+    console.error("Error in registerUser:", error);
+    throw new ApiError(500, "Internal Server Error");
   }
-  //upload avatar on cloudinary
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
-  if (!avatar) {
-    throw new ApiError(400, "upload to cloudinary failed");
-  }
-  const user = await User.create({
-    username,
-    avatar: avatar.url,
-    password,
-    email,
-  });
-  const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken"
-  );
-  if (!createdUser) {
-    throw new ApiError(400, "Failed to create user");
-  }
-  return res
-    .status(201)
-    .json(new ApiResponse(200, createdUser, "Created User Successfully"));
 });
 
 //log in user
