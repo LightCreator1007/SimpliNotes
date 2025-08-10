@@ -10,8 +10,7 @@ import {
   FileText,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import fetchUser from "../utils/fetchUser.js";
-import apiClient from "../utils/apiClient.js";
+import { useAppStore } from "../store";
 
 export default function Header({
   isDarkMode,
@@ -19,19 +18,14 @@ export default function Header({
   isSidebar,
   setIsSidebar,
 }) {
+  const { user, fetchUser, logout } = useAppStore();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const [user, setUser] = useState({
-    username: "John Doe",
-    email: "johndoe@example.com",
-    avatar: "",
-  });
 
   useEffect(() => {
-    const newUser = fetchUser();
-    setUser(newUser);
-  }, []);
+    fetchUser();
+  }, [fetchUser]);
 
   const getInitials = (name = "") =>
     name
@@ -62,7 +56,7 @@ export default function Header({
   }, []);
 
   const handleSignOut = async () => {
-    apiClient("/user/logout", { method: "POST" });
+    logout();
     console.log("Sign out clicked");
     setIsDropdownOpen(false);
     navigate("/");
