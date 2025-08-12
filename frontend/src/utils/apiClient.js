@@ -1,18 +1,26 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
-async function apiFetch(url, options = {}) {
+async function apiFetch(url, options = {}, retry = true) {
   const opts = {
     ...options,
     credentials: "include",
     headers: {
-      "Content-Type": "application/json",
       ...(options.headers || {}),
     },
   };
 
+  if (
+    opts.body &&
+    !(opts.body instanceof FormData) &&
+    !(opts.body instanceof URLSearchParams) &&
+    !opts.headers?.["Content-Type"]
+  ) {
+    opts.headers = { ...opts.headers, "Content-Type": "application/json" };
+  }
+
   let res = await fetch(`${API_URL}${url}`, opts);
 
-  if (res.status === 401) {
+  if (res.status === 401 && retry) {
     const renewRes = await fetch(`${API_URL}/user/renew`, {
       method: "POST",
       credentials: "include",
@@ -25,11 +33,7 @@ async function apiFetch(url, options = {}) {
     }
   }
 
-  if (!res.ok) {
-    throw new Error(`Request failed: ${res.status}`);
-  }
-
-  return res.json();
+  return res;
 }
 
 export default apiFetch;

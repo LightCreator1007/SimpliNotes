@@ -19,10 +19,14 @@ export const useAppStore = create((set, get) => ({
     try {
       set({ loading: true, error: null });
       const res = await apiFetch("/user/get-user", { method: "GET" });
-      if (!res.ok) throw new Error("Failed to fetch user");
-      const data = await res.json();
-      set({ user: data, loading: false });
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`Failed to fetch uer: ${res.status} ${text}`);
+      }
+      const body = await res.json();
+      set({ user: body.data, loading: false });
     } catch (err) {
+      console.error(err);
       set({ error: err.message, loading: false });
     }
   },
@@ -82,11 +86,12 @@ export const useAppStore = create((set, get) => ({
   fetchNotes: async () => {
     try {
       set({ loading: true, error: null });
-      const res = await apiFetch("/notes/", { method: "GET" });
+      const res = await apiFetch("/notes", { method: "GET" });
       if (!res.ok) throw new Error("Failed to fetch notes");
-      const data = await res.json();
-      set({ notes: data, loading: false });
+      const body = await res.json();
+      set({ notes: body.data, loading: false });
     } catch (err) {
+      console.error(err);
       set({ error: err.message, loading: false });
     }
   },
@@ -126,17 +131,6 @@ export const useAppStore = create((set, get) => ({
       const res = await apiFetch(`/notes/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to delete note");
       set({ notes: get().notes.filter((n) => n._id !== id) });
-    } catch (err) {
-      console.error(err);
-    }
-  },
-
-  getNoteById: async (id) => {
-    try {
-      const res = await apiFetch(`/notes/${id}`, { method: "GET" });
-      if (!res.ok) throw new Error("Failed to load the note");
-      const data = await res.data.json();
-      set({ currentNote: data });
     } catch (err) {
       console.error(err);
     }

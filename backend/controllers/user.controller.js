@@ -3,6 +3,7 @@ import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
+import jwt from "jsonwebtoken";
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -65,7 +66,7 @@ const registerUser = asyncHandler(async (req, res) => {
 //log in user
 const login = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
-  if (!username & !email) {
+  if (!username && !email) {
     throw new ApiError(400, "username and emailId is required");
   }
   const user = await User.findOne({
@@ -86,7 +87,7 @@ const login = asyncHandler(async (req, res) => {
   );
   const options = {
     httpOnly: true,
-    secure: true,
+    //secure: true,
   };
   return res
     .status(200)
@@ -126,20 +127,22 @@ const logout = asyncHandler(async (req, res) => {
 
 //renew session
 const renewSession = asyncHandler(async (req, res) => {
-  const { newRefreshToken } = req.cookies;
-  if (!newRefreshToken) {
+  const { refreshToken } = req.cookies;
+  const incomingRefreshToken = refreshToken;
+  if (!incomingRefreshToken) {
+    console.log("Refresh token not found");
     throw new ApiError(400, "No refresh token found");
   }
   try {
     const decodedToken = jwt.verify(
-      newRefreshToken,
+      incomingRefreshToken,
       process.env.REFRESH_TOKEN_SECRET
     );
-    const user = await User.findById(decodedToken?._id);
+    const user = await User.findById(decodedToken?.id);
     if (!user) {
       throw new ApiError(404, "User not found");
     }
-    if (user.refreshToken !== newRefreshToken) {
+    if (user.refreshToken !== incomingRefreshToken) {
       throw new ApiError(401, "Invalid refresh token");
     }
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -147,7 +150,7 @@ const renewSession = asyncHandler(async (req, res) => {
     );
     const options = {
       httpOnly: true,
-      secure: true,
+      //secure: true,
     };
     return res
       .status(200)
@@ -161,6 +164,7 @@ const renewSession = asyncHandler(async (req, res) => {
         )
       );
   } catch (err) {
+    console.log(err);
     throw new ApiError(401, "error renewing session");
   }
 });
@@ -169,7 +173,7 @@ const renewSession = asyncHandler(async (req, res) => {
 
 const changeAvatar = asyncHandler(async (req, res) => {
   try {
-    const avatarLocalPath = req.files?.path;
+    const avatarLocalPath = req.files?.avatar[0]?.path;
     if (!avatarLocalPath) {
       throw new ApiError(400, "avatar is required");
     }

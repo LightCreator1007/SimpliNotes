@@ -19,11 +19,12 @@ router
 
 router.route("/login").post(login);
 
+router.route("/renew").post(renewSession);
+
 //secure routes
 router.use(verifyJwt);
 
 router.route("/logout").post(logout);
-router.route("/renew").post(renewSession);
 router.route("/change-avatar").post(upload.single("avatar"), changeAvatar);
 router.route("/update-user").post(updateUser);
 router.route("/change-password").post(changePassword);

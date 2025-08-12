@@ -3,8 +3,10 @@ import MDEditor from "@uiw/react-md-editor";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
 import apiClient from "../utils/apiClient.js";
+import { useAppStore } from "../store.js";
 
 export default function Editor({ note, isDarkMode }) {
+  const { updateNote } = useAppStore();
   const defaultPlaceholder = `# Welcome to Your Markdown Editor
 
 Start writing your content here! This editor supports:
@@ -44,24 +46,8 @@ console.log(greeting);
   }, [note, defaultPlaceholder]);
 
   useEffect(() => {
-    const updateNote = async () => {
-      if (!note || !note._id) {
-        console.warn("No note selected or note ID is missing.");
-        return;
-      }
-
-      try {
-        await apiClient(`/notes/${note._id}`, { method: "PUT" });
-      } catch (err) {
-        console.error("Failed to update note:", err);
-      }
-    };
-
-    // Only update if we actually have a note and its content changes
-    if (note && note._id) {
-      updateNote();
-    }
-  }, [note, value]);
+    updateNote(note._id);
+  }, [note, value, updateNote]);
 
   return (
     <div
