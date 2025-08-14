@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-function useTypewriter(text, speed = 300) {
+function useTypewriter(text, speed = 100) {
   const [displayText, setDisplayText] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -108,7 +108,7 @@ export default function LandingPage() {
 
   const { displayText, isComplete } = useTypewriter(
     "Where thoughts become clarity.",
-    100
+    50
   );
 
   useEffect(() => {

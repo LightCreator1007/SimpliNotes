@@ -2,51 +2,19 @@ import { useEffect, useState } from "react";
 import MDEditor from "@uiw/react-md-editor";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
-import apiClient from "../utils/apiClient.js";
 import { useAppStore } from "../store.js";
 
 export default function Editor({ note, isDarkMode }) {
   const { updateNote } = useAppStore();
-  const defaultPlaceholder = `# Welcome to Your Markdown Editor
 
-Start writing your content here! This editor supports:
-
-## Features
-- **Live preview** as you type
-- *Rich formatting* options
-- Code blocks with syntax highlighting
-- Tables, lists, and more!
-
-### Code Example
-\`\`\`javascript
-const greeting = "Hello, World!";
-console.log(greeting);
-\`\`\`
-
-### Task List
-- [x] Set up the editor
-- [ ] Write amazing content
-- [ ] Share with the world
-
-> Happy writing! ✨`;
-
-  const [value, setValue] = useState(
-    note?.content && note.content.trim() !== ""
-      ? note.content
-      : defaultPlaceholder
-  );
+  const [value, setValue] = useState(note?.content || "");
 
   useEffect(() => {
-    // Update editor content if note changes
-    setValue(
-      note?.content && note.content.trim() !== ""
-        ? note.content
-        : defaultPlaceholder
-    );
-  }, [note, defaultPlaceholder]);
+    setValue(note?.content || "");
+  }, [note]);
 
   useEffect(() => {
-    updateNote(note._id);
+    updateNote(note?._id, value);
   }, [note, value, updateNote]);
 
   return (
@@ -81,7 +49,7 @@ console.log(greeting);
           <div className={isDarkMode ? "p-6 bg-gray-900" : "p-6 bg-white"}>
             {note ? (
               <div
-                className={`rounded-xl overflow-hidden border shadow-lg
+                className={`rounded-xl overflow-hidden border
                 ${isDarkMode ? "border-gray-700" : "border-slate-200"}`}
               >
                 <MDEditor

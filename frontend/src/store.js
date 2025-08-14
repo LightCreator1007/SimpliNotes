@@ -9,7 +9,8 @@ export const useAppStore = create((set, get) => ({
     email: "123@gmail.com",
     avatar: "",
   },
-  currentNote: {},
+  activeNote: null,
+  setActiveNote: (id) => set({ activeNote: id }),
   notes: [],
   loading: false,
   error: null,
@@ -114,7 +115,7 @@ export const useAppStore = create((set, get) => ({
     try {
       const res = await apiFetch(`/notes/${id}`, {
         method: "PUT",
-        body: JSON.stringify(updates),
+        body: JSON.stringify({ content: updates }),
       });
       if (!res.ok) throw new Error("Failed to update note");
       const updated = await res.json();

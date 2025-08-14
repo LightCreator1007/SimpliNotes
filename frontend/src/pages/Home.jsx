@@ -32,7 +32,7 @@ export default function Home() {
             isSidebar ? "w-64" : "w-0"
           } transition-width duration-300 ease-in-out overflow-hidden`}
         >
-          <Sidebar setNote={setNote} />
+          <Sidebar setNote={setNote} note={note} />
         </div>
         <div className="w-full mas-w-4xl mt-1">
           <Editor note={note} setNote={setNote} isDarkMode={isDarkMode} />
