@@ -1,7 +1,7 @@
 // src/store.js
 import { create } from "zustand";
 import apiFetch from "./utils/apiClient";
-const API_URL = import.meta.env.VIE_API_URL || "http://localhost:8000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export const useAppStore = create((set, get) => ({
   user: {
@@ -9,8 +9,8 @@ export const useAppStore = create((set, get) => ({
     email: "123@gmail.com",
     avatar: "",
   },
-  activeNote: null,
-  setActiveNote: (id) => set({ activeNote: id }),
+  activeNoteId: null,
+  setActiveNoteId: (id) => set({ activeNoteId: id }),
   notes: [],
   loading: false,
   error: null,
@@ -35,12 +35,13 @@ export const useAppStore = create((set, get) => ({
   updateUser: async (updates) => {
     try {
       const res = await apiFetch("/user/update-user", {
-        method: "POST",
+        method: "PUT",
         body: JSON.stringify(updates),
       });
       if (!res.ok) throw new Error("Failed to update user");
       const updated = await res.json();
-      set({ user: updated });
+      set({ user: updated.data });
+      return updated;
     } catch (err) {
       console.error(err);
     }
@@ -61,14 +62,14 @@ export const useAppStore = create((set, get) => ({
 
   changeAvatar: async (formData) => {
     try {
-      const res = await fetch(`${API_URL}/user/change-avatar`, {
-        method: "POST",
-        credentials: "include",
+      const res = await apiFetch("/user/change-avatar", {
+        method: "PUT",
         body: formData,
       });
       if (!res.ok) throw new Error("Failed to change avatar");
       const updatedUser = await res.json();
-      set({ user: updatedUser });
+      set({ user: updatedUser.data });
+      return updatedUser;
     } catch (err) {
       console.error(err);
     }
@@ -115,13 +116,15 @@ export const useAppStore = create((set, get) => ({
     try {
       const res = await apiFetch(`/notes/${id}`, {
         method: "PUT",
-        body: JSON.stringify({ content: updates }),
+        body: JSON.stringify(updates),
       });
       if (!res.ok) throw new Error("Failed to update note");
-      const updated = await res.json();
+      const body = await res.json();
+      const updated = body.data;
       set({
         notes: get().notes.map((n) => (n._id === id ? updated : n)),
       });
+      return updated;
     } catch (err) {
       console.error(err);
     }

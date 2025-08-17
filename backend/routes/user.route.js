@@ -25,8 +25,10 @@ router.route("/renew").post(renewSession);
 router.use(verifyJwt);
 
 router.route("/logout").post(logout);
-router.route("/change-avatar").post(upload.single("avatar"), changeAvatar);
-router.route("/update-user").post(updateUser);
+router
+  .route("/change-avatar")
+  .put(upload.fields([{ name: "avatar", maxCount: 1 }]), changeAvatar);
+router.route("/update-user").put(updateUser);
 router.route("/change-password").post(changePassword);
 router.route("/get-user").get(getUser);
 

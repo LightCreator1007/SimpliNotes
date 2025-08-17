@@ -1,40 +1,46 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import MDEditor from "@uiw/react-md-editor";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
 import { useAppStore } from "../store.js";
 
-export default function Editor({ note, isDarkMode }) {
-  const { updateNote } = useAppStore();
-
+export default function Editor({ isDarkMode }) {
+  const { updateNote, activeNoteId, notes } = useAppStore();
+  const note = notes.find((n) => n._id === activeNoteId);
   const [value, setValue] = useState(note?.content || "");
+  const justSwitched = useRef(false);
+
+  console.log(note);
 
   useEffect(() => {
     setValue(note?.content || "");
-  }, [note]);
+    justSwitched.current = true;
+  }, [note?.content]);
 
   useEffect(() => {
-    updateNote(note?._id, value);
+    if (!note || !note?._id) return;
+
+    if (justSwitched.current) {
+      justSwitched.current = false;
+      return;
+    }
+
+    const t = setTimeout(() => {
+      if (note.content !== value) {
+        updateNote(note?._id, { content: value });
+      }
+    }, 400);
+    return () => clearTimeout(t);
   }, [note, value, updateNote]);
 
   return (
     <div
-      className={`min-h-screen p-6 max-w-screen transition-colors duration-300
-      ${
-        isDarkMode
-          ? "bg-gray-900 text-white"
-          : "bg-gradient-to-br from-slate-50 to-slate-100"
-      }`}
+      className="min-h-screen p-6 max-w-screen transition-colors duration-300 dark:bg-gray-900 dark:text-white"
       data-color-mode={isDarkMode ? "dark" : "light"}
     >
       <div className="max-w-6xl mx-auto">
         <div
-          className={`rounded-2xl shadow-2xl border overflow-hidden
-          ${
-            isDarkMode
-              ? "bg-gray-800 border-gray-700"
-              : "bg-white border-slate-200"
-          }`}
+          className={`rounded-2xl shadow-2xl border overflow-hidden bg-white border-slate-200 dark:bg-gray-800 dark:border-gray-700`}
         >
           <div
             className={`p-6 mt-1 border-b-2 
@@ -77,11 +83,9 @@ export default function Editor({ note, isDarkMode }) {
 
           <div
             className={`px-6 py-4 border-t
-            ${
-              isDarkMode
-                ? "bg-gray-800 border-gray-700"
-                : "bg-slate-50 border-slate-200"
-            }`}
+                dark:bg-gray-800 dark:border-gray-700
+                bg-slate-50 border-slate-200
+            `}
           >
             <div className="flex items-center justify-between text-sm">
               <div className="flex items-center space-x-4">
