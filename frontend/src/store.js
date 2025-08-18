@@ -4,11 +4,7 @@ import apiFetch from "./utils/apiClient";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 export const useAppStore = create((set, get) => ({
-  user: {
-    username: "John Doe",
-    email: "123@gmail.com",
-    avatar: "",
-  },
+  user: null,
   activeNoteId: null,
   setActiveNoteId: (id) => set({ activeNoteId: id }),
   notes: [],

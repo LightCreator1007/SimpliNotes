@@ -10,8 +10,6 @@ export default function Editor({ isDarkMode }) {
   const [value, setValue] = useState(note?.content || "");
   const justSwitched = useRef(false);
 
-  console.log(note);
-
   useEffect(() => {
     setValue(note?.content || "");
     justSwitched.current = true;
