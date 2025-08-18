@@ -3,7 +3,7 @@ import { create } from "zustand";
 import apiFetch from "./utils/apiClient";
 const API_URL =
   import.meta.env.VITE_API_URL ||
-  "https://simpli-notes-backend.railway.internal/api";
+  "https://simpli-notes-backend-production.up.railway.app/api";
 
 export const useAppStore = create((set, get) => ({
   user: null,

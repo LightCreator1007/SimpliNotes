@@ -1,6 +1,6 @@
 const API_URL =
   import.meta.env.VITE_API_URL ||
-  "https://simpli-notes-backend.railway.internal/api";
+  "https://simpli-notes-backend-production.up.railway.app/api";
 
 async function apiFetch(url, options = {}, retry = true) {
   console.log(API_URL);

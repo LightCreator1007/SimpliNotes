@@ -48,7 +48,7 @@ export default function Login() {
 
     try {
       const response = await fetch(
-        "https://simpli-notes-backend.railway.internal/api/user/login",
+        "https://simpli-notes-backend-production.up.railway.app/api/user/login",
         {
           method: "POST",
           headers: {
