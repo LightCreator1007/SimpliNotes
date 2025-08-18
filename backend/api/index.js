@@ -1,10 +1,9 @@
 // backend/api/index.js
-import "./config.js"; // Load env variables
+import "../config.js";
 import connectDb from "../db/dbConnect.js";
 import app from "../app.js";
 import serverless from "serverless-http";
 
-// Ensure DB is connected before handling requests
 let dbReady = false;
 
 const ensureDbConnection = async () => {
