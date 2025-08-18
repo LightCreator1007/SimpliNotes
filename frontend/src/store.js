@@ -111,7 +111,7 @@ export const useAppStore = create((set, get) => ({
   updateNote: async (id, updates) => {
     try {
       const res = await apiFetch(`/notes/${id}`, {
-        method: "PUT",
+        method: "PATCH",
         body: JSON.stringify(updates),
       });
       if (!res.ok) throw new Error("Failed to update note");

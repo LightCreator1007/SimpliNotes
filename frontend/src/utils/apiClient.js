@@ -1,6 +1,8 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 async function apiFetch(url, options = {}, retry = true) {
+  console.log(API_URL);
+
   const opts = {
     ...options,
     credentials: "include",
