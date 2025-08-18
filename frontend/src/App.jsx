@@ -11,8 +11,8 @@ import Account from "./pages/Account.jsx";
 import Signup from "./pages/Signup.jsx";
 import useTheme from "./utils/useTheme.jsx";
 import { useAppStore } from "./store.js";
-import { useEffect } from "react";
-import apiFetch from "./utils/apiClient.js";
+// import { useEffect } from "react";
+// import apiFetch from "./utils/apiClient.js";
 
 function ProtectedRoute({ children }) {
   const { user } = useAppStore();
@@ -25,13 +25,13 @@ function ProtectedRoute({ children }) {
 function App() {
   useTheme();
 
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      await apiFetch("/user/renew", { method: "POST" });
-    }, 14 * 60 * 1000);
+  // useEffect(() => {
+  //   const interval = setInterval(async () => {
+  //     await apiFetch("/user/renew", { method: "POST" });
+  //   }, 14 * 60 * 1000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   return (
     <Router>
