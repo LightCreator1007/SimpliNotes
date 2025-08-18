@@ -1,7 +1,8 @@
 // src/store.js
 import { create } from "zustand";
 import apiFetch from "./utils/apiClient";
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_URL =
+  import.meta.env.VITE_API_URL || "https://simpli-notes-backend.vercel.app/";
 
 export const useAppStore = create((set, get) => ({
   user: null,
