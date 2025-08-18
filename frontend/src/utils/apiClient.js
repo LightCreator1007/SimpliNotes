@@ -1,5 +1,6 @@
 const API_URL =
-  import.meta.env.VITE_API_URL || "https://simpli-notes-backend.vercel.app/api";
+  import.meta.env.VITE_API_URL ||
+  "https://simpli-notes-backend.railway.internal/api";
 
 async function apiFetch(url, options = {}, retry = true) {
   console.log(API_URL);
