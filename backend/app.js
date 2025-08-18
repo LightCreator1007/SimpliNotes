@@ -7,7 +7,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: process.env.CLIENT_URL || "https://simpli-notes-2.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   })
@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 //routes
-app.use("/user", userRouter);
-app.use("/notes", notesRouter);
+app.use("api/user", userRouter);
+app.use("api/notes", notesRouter);
 
 export default app;
