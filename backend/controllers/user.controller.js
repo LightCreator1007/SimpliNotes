@@ -39,9 +39,6 @@ const registerUser = asyncHandler(async (req, res) => {
       throw new ApiError(400, "avatar is required");
     }
     const avatar = await uploadOnCloudinary(avatarLocalPath);
-    if (!avatar) {
-      throw new ApiError(400, "upload to cloudinary failed");
-    }
     const user = await User.create({
       username,
       avatar: avatar.url,
@@ -87,7 +84,7 @@ const login = asyncHandler(async (req, res) => {
   );
   const options = {
     httpOnly: true,
-    //secure: true,
+    secure: true,
   };
   return res
     .status(200)
@@ -150,7 +147,7 @@ const renewSession = asyncHandler(async (req, res) => {
     );
     const options = {
       httpOnly: true,
-      //secure: true,
+      secure: true,
     };
     return res
       .status(200)
