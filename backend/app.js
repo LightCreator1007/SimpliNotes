@@ -15,10 +15,9 @@ app.use(
 
 console.log(process.env.CLIENT_URL);
 
-app.use(express.static("./uploads")); //all uploads will be treated as  static assets
-app.use(express.urlencoded({ extended: false })); //parse from data and add it in request body
-app.use(express.json()); //parse json and add it in request body
-
+app.use(express.static("./uploads"));
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 app.use(cookieParser());
 
 //routes
