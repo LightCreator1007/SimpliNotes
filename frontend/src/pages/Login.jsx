@@ -66,7 +66,6 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        // Store user data in localStorage or context
         if (data.token) {
           localStorage.setItem("authToken", data.token);
         }
@@ -74,9 +73,7 @@ export default function Login() {
           localStorage.setItem("user", JSON.stringify(data.user));
           setUser(data.user);
         }
-
-        // Redirect to dashboard/home
-        navigate("/home");
+        setTimeout(() => navigate("/home"), 0);
       } else {
         setError(data.message || "Invalid email or password");
       }
