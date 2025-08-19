@@ -134,7 +134,7 @@ export default function SignUp() {
         formDataToSend.append("avatar", avatar);
       }
 
-      const response = await fetch(`${API_URL}/user/register`, {
+      const response = await fetch(`api/user/register`, {
         method: "POST",
         body: formDataToSend,
       });

@@ -22,7 +22,7 @@ async function apiFetch(url, options = {}, retry = true) {
     opts.headers = { ...opts.headers, "Content-Type": "application/json" };
   }
 
-  let res = await fetch(`${API_URL}${url}`, opts);
+  let res = await fetch(`/api/${url}`, opts);
 
   if (res.status === 401 && retry) {
     const renewRes = await fetch(`${API_URL}/user/renew`, {
