@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://simpli-notes-backend-production.up.railway.app/api"
+      "destination": "https://simpli-notes-backend-production.up.railway.app/api/$1"
     },
     { "source": "/(.*)", "destination": "/" }
   ]
