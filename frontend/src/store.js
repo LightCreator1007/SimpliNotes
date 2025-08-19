@@ -7,6 +7,7 @@ const API_URL =
 
 export const useAppStore = create((set, get) => ({
   user: null,
+  setUser: (user) => set({ user }),
   activeNoteId: null,
   setActiveNoteId: (id) => set({ activeNoteId: id }),
   notes: [],

@@ -9,10 +9,11 @@ import {
   Loader2,
   FileText,
 } from "lucide-react";
+import { useAppStore } from "../store";
 
 export default function Login() {
   const navigate = useNavigate();
-
+  const setUser = useAppStore((state) => state.setUser);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -71,6 +72,7 @@ export default function Login() {
         }
         if (data.user) {
           localStorage.setItem("user", JSON.stringify(data.user));
+          setUser(data.user);
         }
 
         // Redirect to dashboard/home
