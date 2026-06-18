@@ -1,17 +1,16 @@
 import multer from "multer";
-import path from "path";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import os from "os";
 
-const tempDir = path.join(__dirname, "../uploads/temp");
+// Use the OS temp dir (writable on Vercel/serverless, where the project
+// filesystem is read-only). Files are uploaded to Cloudinary then unlinked.
+const tempDir = os.tmpdir();
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, tempDir);
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
 

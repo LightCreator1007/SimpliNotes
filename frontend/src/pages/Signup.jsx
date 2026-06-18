@@ -14,10 +14,6 @@ import {
   FileText,
 } from "lucide-react";
 
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://simpli-notes-backend-production.up.railway.app/api";
-
 export default function SignUp() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
@@ -134,8 +130,9 @@ export default function SignUp() {
         formDataToSend.append("avatar", avatar);
       }
 
-      const response = await fetch(`api/user/register`, {
+      const response = await fetch(`/api/user/register`, {
         method: "POST",
+        credentials: "include",
         body: formDataToSend,
       });
 

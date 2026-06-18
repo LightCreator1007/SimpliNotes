@@ -265,7 +265,7 @@ export default function LandingPage() {
         </div>
       </footer>
 
-      <style jsx>{`
+      <style>{`
         @keyframes blink {
           0%,
           50% {

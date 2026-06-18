@@ -88,11 +88,7 @@ console.log(greeting);
       };
 
       const created = await createNote(newNote);
-      await fetchNotes();
       if (created) {
-        useAppStore.setState((state) => ({
-          notes: [created, ...state.notes],
-        }));
         setActiveNoteId(created._id);
         startEditingTitle(created);
       }
@@ -121,11 +117,11 @@ console.log(greeting);
             heading: editingTitle.trim(),
           };
           useAppStore.setState((state) => ({
-            notes: state.map((n) =>
+            notes: state.notes.map((n) =>
               n._id === editingNoteId ? updatedNoteData : n
             ),
           }));
-          await updateNote(editingNoteId, updatedNoteData);
+          await updateNote(editingNoteId, { heading: editingTitle.trim() });
           await fetchNotes();
         }
       } catch (err) {

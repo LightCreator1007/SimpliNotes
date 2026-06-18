@@ -1,9 +1,6 @@
 // src/store.js
 import { create } from "zustand";
 import apiFetch from "./utils/apiClient";
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "https://simpli-notes-backend-production.up.railway.app/api";
 
 export const useAppStore = create((set, get) => ({
   user: null,
@@ -21,7 +18,7 @@ export const useAppStore = create((set, get) => ({
       const res = await apiFetch("/user/get-user", { method: "GET" });
       if (!res.ok) {
         const text = await res.text().catch(() => "");
-        throw new Error(`Failed to fetch uer: ${res.status} ${text}`);
+        throw new Error(`Failed to fetch user: ${res.status} ${text}`);
       }
       const body = await res.json();
       set({ user: body.data, loading: false });
@@ -32,46 +29,40 @@ export const useAppStore = create((set, get) => ({
   },
 
   updateUser: async (updates) => {
-    try {
-      const res = await apiFetch("/user/update-user", {
-        method: "PUT",
-        body: JSON.stringify(updates),
-      });
-      if (!res.ok) throw new Error("Failed to update user");
-      const updated = await res.json();
-      set({ user: updated.data });
-      return updated;
-    } catch (err) {
-      console.error(err);
-    }
+    const res = await apiFetch("/user/update-user", {
+      method: "PUT",
+      body: JSON.stringify(updates),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body.message || "Failed to update user");
+    set({ user: body.data });
+    return body;
   },
 
   changePassword: async (passwordData) => {
-    try {
-      const res = await apiFetch("/user/change-password", {
-        method: "POST",
-        body: JSON.stringify(passwordData),
-      });
-      if (!res.ok) throw new Error("Failed to change password");
-      return await res.json();
-    } catch (err) {
-      console.error(err);
+    const res = await apiFetch("/user/change-password", {
+      method: "POST",
+      body: JSON.stringify({
+        oldPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      }),
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(body.message || "Failed to change password");
     }
+    return body;
   },
 
   changeAvatar: async (formData) => {
-    try {
-      const res = await apiFetch("/user/change-avatar", {
-        method: "PUT",
-        body: formData,
-      });
-      if (!res.ok) throw new Error("Failed to change avatar");
-      const updatedUser = await res.json();
-      set({ user: updatedUser.data });
-      return updatedUser;
-    } catch (err) {
-      console.error(err);
-    }
+    const res = await apiFetch("/user/change-avatar", {
+      method: "PUT",
+      body: formData,
+    });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body.message || "Failed to change avatar");
+    set({ user: body.data });
+    return body;
   },
 
   logout: async () => {
@@ -104,8 +95,10 @@ export const useAppStore = create((set, get) => ({
         body: JSON.stringify(noteData),
       });
       if (!res.ok) throw new Error("Failed to create note");
-      const newNote = await res.json();
-      set({ notes: [...get().notes, newNote] });
+      const body = await res.json();
+      const newNote = body.data;
+      set({ notes: [newNote, ...get().notes] });
+      return newNote;
     } catch (err) {
       console.error(err);
     }

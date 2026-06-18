@@ -19,17 +19,20 @@ process.on("SIGINT", async () => {
 });
 
 const connectDb = async () => {
-  try {
-    const connectionInstance = await mongoose.connect(
-      `${process.env.MONGODB_URI}`
-    );
-    console.log(
-      `successfully connected to database: ${connectionInstance.connection.host}`
-    );
-  } catch (error) {
-    console.log(`failed to connect to database: ${error}`);
-    process.exit(1);
+  // Reuse an existing connection across warm serverless invocations.
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
   }
+  if (!process.env.MONGODB_URI) {
+    throw new Error("MONGODB_URI is not set");
+  }
+  const connectionInstance = await mongoose.connect(
+    `${process.env.MONGODB_URI}`
+  );
+  console.log(
+    `successfully connected to database: ${connectionInstance.connection.host}`
+  );
+  return connectionInstance;
 };
 
 export default connectDb;

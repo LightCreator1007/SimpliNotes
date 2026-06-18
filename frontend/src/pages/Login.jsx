@@ -63,14 +63,11 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        if (data.token) {
-          localStorage.setItem("authToken", data.token);
+        const loggedInUser = data.data?.user;
+        if (loggedInUser) {
+          setUser(loggedInUser);
         }
-        if (data.user) {
-          localStorage.setItem("user", JSON.stringify(data.user));
-          setUser(data.user);
-        }
-        setTimeout(() => navigate("/home"), 0);
+        navigate("/home");
       } else {
         setError(data.message || "Invalid email or password");
       }
