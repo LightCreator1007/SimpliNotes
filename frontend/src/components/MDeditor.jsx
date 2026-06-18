@@ -8,25 +8,27 @@ export default function Editor({ isDarkMode }) {
   const { updateNote, activeNoteId, notes } = useAppStore();
   const note = notes.find((n) => n._id === activeNoteId);
   const [value, setValue] = useState(note?.content || "");
-  const justSwitched = useRef(false);
+  // Tracks which note the local `value` belongs to, so we only reload from
+  // the store when the user switches notes — not when our own autosave
+  // round-trip updates the store and would otherwise clobber in-flight typing.
+  const loadedNoteId = useRef(activeNoteId);
 
   useEffect(() => {
-    setValue(note?.content || "");
-    justSwitched.current = true;
-  }, [note?.content]);
+    const selected = notes.find((n) => n._id === activeNoteId);
+    setValue(selected?.content || "");
+    loadedNoteId.current = activeNoteId;
+    // Only re-run when the selected note changes, not on content updates.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeNoteId]);
 
   useEffect(() => {
-    if (!note || !note?._id) return;
-
-    if (justSwitched.current) {
-      justSwitched.current = false;
-      return;
-    }
+    if (!note?._id) return;
+    // Don't save until the editor has been loaded with this note's content.
+    if (loadedNoteId.current !== note._id) return;
+    if ((note.content || "") === value) return;
 
     const t = setTimeout(() => {
-      if (note.content !== value) {
-        updateNote(note?._id, { content: value });
-      }
+      updateNote(note._id, { content: value });
     }, 400);
     return () => clearTimeout(t);
   }, [note, value, updateNote]);
