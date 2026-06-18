@@ -52,6 +52,14 @@ export default function Sidebar({ setNote }) {
       setNote(null);
     }
   }, [activeNoteId, notes, setNote]);
+
+  // Auto-open the most recent note once notes load so the editor isn't stuck
+  // on the empty "No notes found" state when notes actually exist.
+  useEffect(() => {
+    if (!activeNoteId && notes.length > 0) {
+      setActiveNoteId(notes[0]._id);
+    }
+  }, [activeNoteId, notes, setActiveNoteId]);
   const filteredNotes = searchQuery
     ? notes.filter((noteItem) => {
         const content = noteItem.content || "";

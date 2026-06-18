@@ -91,15 +91,15 @@ function ChangePasswordOverlay({ isOpen, onClose, onSubmit }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <Lock className="w-5 h-5" />
             Change Password
           </h2>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -107,14 +107,14 @@ function ChangePasswordOverlay({ isOpen, onClose, onSubmit }) {
 
         <div className="p-6 space-y-4">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-md text-sm">
               {error}
             </div>
           )}
 
           {/* Current Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Current Password
             </label>
             <div className="relative">
@@ -123,14 +123,14 @@ function ChangePasswordOverlay({ isOpen, onClose, onSubmit }) {
                 name="currentPassword"
                 value={passwordData.currentPassword}
                 onChange={handlePasswordChange}
-                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter current password"
                 required
               />
               <button
                 type="button"
                 onClick={() => togglePasswordVisibility("current")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 {showPasswords.current ? (
                   <EyeOff className="w-4 h-4" />
@@ -142,7 +142,7 @@ function ChangePasswordOverlay({ isOpen, onClose, onSubmit }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               New Password
             </label>
             <div className="relative">
@@ -151,14 +151,14 @@ function ChangePasswordOverlay({ isOpen, onClose, onSubmit }) {
                 name="newPassword"
                 value={passwordData.newPassword}
                 onChange={handlePasswordChange}
-                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter new password"
                 required
               />
               <button
                 type="button"
                 onClick={() => togglePasswordVisibility("new")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 {showPasswords.new ? (
                   <EyeOff className="w-4 h-4" />
@@ -167,14 +167,14 @@ function ChangePasswordOverlay({ isOpen, onClose, onSubmit }) {
                 )}
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Must be at least 8 characters long
             </p>
           </div>
 
           {/* Confirm New Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Confirm New Password
             </label>
             <div className="relative">
@@ -183,14 +183,14 @@ function ChangePasswordOverlay({ isOpen, onClose, onSubmit }) {
                 name="confirmPassword"
                 value={passwordData.confirmPassword}
                 onChange={handlePasswordChange}
-                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Confirm new password"
                 required
               />
               <button
                 type="button"
                 onClick={() => togglePasswordVisibility("confirm")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 {showPasswords.confirm ? (
                   <EyeOff className="w-4 h-4" />
@@ -211,7 +211,7 @@ function ChangePasswordOverlay({ isOpen, onClose, onSubmit }) {
             </button>
             <button
               onClick={handleClose}
-              className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+              className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 py-2 px-4 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
             >
               Cancel
             </button>
@@ -381,106 +381,195 @@ export default function Account() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8">
-      <div className="bg-white rounded-lg shadow-sm border">
-        <div className="px-6 py-4 border-b">
-          <h1 className="text-2xl font-semibold text-gray-900">
-            Account Settings
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Manage your account information and preferences
-          </p>
-        </div>
-
-        {/* Success/Error Messages */}
-        {error && (
-          <div className="mx-6 mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
-            {error}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      <div className="max-w-4xl mx-auto p-6 space-y-8">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700">
+          <div className="px-6 py-4 border-b dark:border-gray-700">
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              Account Settings
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">
+              Manage your account information and preferences
+            </p>
           </div>
-        )}
-        {success && (
-          <div className="mx-6 mt-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md">
-            {success}
-          </div>
-        )}
 
-        <div className="p-6 space-y-8">
-          {/* Profile Picture Section */}
-          <div className="flex items-start space-x-6">
-            <div className="flex-shrink-0">
-              <div className="relative">
-                {avatarPreview ? (
-                  <img
-                    src={avatarPreview}
-                    alt="Profile"
-                    className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
-                  />
-                ) : (
-                  <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-gray-200">
-                    <User className="w-10 h-10 text-gray-400" />
+          {/* Success/Error Messages */}
+          {error && (
+            <div className="mx-6 mt-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-md">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="mx-6 mt-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-md">
+              {success}
+            </div>
+          )}
+
+          <div className="p-6 space-y-8">
+            {/* Profile Picture Section */}
+            <div className="flex items-start space-x-6">
+              <div className="flex-shrink-0">
+                <div className="relative">
+                  {avatarPreview ? (
+                    <img
+                      src={avatarPreview}
+                      alt="Profile"
+                      className="w-24 h-24 rounded-full object-cover border-4 border-gray-200 dark:border-gray-700"
+                    />
+                  ) : (
+                    <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border-4 border-gray-200 dark:border-gray-700">
+                      <User className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+                    </div>
+                  )}
+                  {!isEditingPic && (
+                    <button
+                      onClick={() => setIsEditingPic(true)}
+                      className="absolute -bottom-1 -right-1 bg-blue-600 text-white rounded-full p-2 hover:bg-blue-700 transition-colors shadow-lg"
+                    >
+                      <Camera className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex-1">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                  Profile Picture
+                </h3>
+
+                {!isEditingPic ? (
+                  <div>
+                    <p className="text-gray-600 dark:text-gray-400 mb-3">
+                      Update your profile picture to personalize your account
+                    </p>
+                    <button
+                      onClick={() => setIsEditingPic(true)}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                      Change Picture
+                    </button>
                   </div>
-                )}
-                {!isEditingPic && (
-                  <button
-                    onClick={() => setIsEditingPic(true)}
-                    className="absolute -bottom-1 -right-1 bg-blue-600 text-white rounded-full p-2 hover:bg-blue-700 transition-colors shadow-lg"
-                  >
-                    <Camera className="w-4 h-4" />
-                  </button>
+                ) : (
+                  <div className="space-y-4">
+                    <p className="text-gray-600 dark:text-gray-400">
+                      Choose a new profile picture (max 5MB)
+                    </p>
+
+                    <div className="flex flex-wrap gap-3">
+                      <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer transition-colors">
+                        <Camera className="w-4 h-4" />
+                        Choose File
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handleAvatarChange}
+                          className="hidden"
+                        />
+                      </label>
+
+                      {avatarPreview && (
+                        <button
+                          onClick={removeAvatar}
+                          className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-md hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                        >
+                          Remove Picture
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        onClick={handleAvatarSave}
+                        disabled={isLoading}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        <Save className="w-4 h-4" />
+                        {isLoading ? "Saving..." : "Save Changes"}
+                      </button>
+                      <button
+                        onClick={cancelAvatarEdit}
+                        className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
 
-            <div className="flex-1">
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Profile Picture
-              </h3>
-
-              {!isEditingPic ? (
-                <div>
-                  <p className="text-gray-600 mb-3">
-                    Update your profile picture to personalize your account
-                  </p>
+            {/* User Details Section */}
+            <div className="border-t dark:border-gray-700 pt-8">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                  Personal Information
+                </h3>
+                {!isEditingUser && (
                   <button
-                    onClick={() => setIsEditingPic(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                    onClick={() => setIsEditingUser(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                   >
                     <Edit2 className="w-4 h-4" />
-                    Change Picture
+                    Edit
                   </button>
+                )}
+              </div>
+
+              {!isEditingUser ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Username
+                    </label>
+                    <p className="text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md">
+                      {user?.username || "Not set"}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Email Address
+                    </label>
+                    <p className="text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md">
+                      {user?.email || "Not set"}
+                    </p>
+                  </div>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  <p className="text-gray-600">
-                    Choose a new profile picture (max 5MB)
-                  </p>
-
-                  <div className="flex flex-wrap gap-3">
-                    <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer transition-colors">
-                      <Camera className="w-4 h-4" />
-                      Choose File
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Username
+                      </label>
                       <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleAvatarChange}
-                        className="hidden"
+                        type="text"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Enter your username"
                       />
-                    </label>
-
-                    {avatarPreview && (
-                      <button
-                        onClick={removeAvatar}
-                        className="px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
-                      >
-                        Remove Picture
-                      </button>
-                    )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Enter your email"
+                      />
+                    </div>
                   </div>
 
                   <div className="flex gap-3">
                     <button
-                      onClick={handleAvatarSave}
+                      onClick={handleUserDetailsSave}
                       disabled={isLoading}
                       className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
@@ -488,8 +577,8 @@ export default function Account() {
                       {isLoading ? "Saving..." : "Save Changes"}
                     </button>
                     <button
-                      onClick={cancelAvatarEdit}
-                      className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                      onClick={cancelUserEdit}
+                      className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                     >
                       Cancel
                     </button>
@@ -497,123 +586,40 @@ export default function Account() {
                 </div>
               )}
             </div>
-          </div>
 
-          {/* User Details Section */}
-          <div className="border-t pt-8">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-medium text-gray-900">
-                Personal Information
-              </h3>
-              {!isEditingUser && (
+            {/* Password Section */}
+            <div className="border-t dark:border-gray-700 pt-8">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    Password
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                    Keep your account secure with a strong password
+                  </p>
+                </div>
                 <button
-                  onClick={() => setIsEditingUser(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                  onClick={() => setIsPasswordOverlayOpen(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
-                  <Edit2 className="w-4 h-4" />
-                  Edit
+                  <Lock className="w-4 h-4" />
+                  Change Password
                 </button>
-              )}
+              </div>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
+                Last updated: Never
+              </p>
             </div>
-
-            {!isEditingUser ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Username
-                  </label>
-                  <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
-                    {user?.username || "Not set"}
-                  </p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
-                  </label>
-                  <p className="text-gray-900 bg-gray-50 px-3 py-2 rounded-md">
-                    {user?.email || "Not set"}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      name="username"
-                      value={formData.username}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your username"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter your email"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleUserDetailsSave}
-                    disabled={isLoading}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  >
-                    <Save className="w-4 h-4" />
-                    {isLoading ? "Saving..." : "Save Changes"}
-                  </button>
-                  <button
-                    onClick={cancelUserEdit}
-                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Password Section */}
-          <div className="border-t pt-8">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h3 className="text-lg font-medium text-gray-900">Password</h3>
-                <p className="text-gray-600 text-sm mt-1">
-                  Keep your account secure with a strong password
-                </p>
-              </div>
-              <button
-                onClick={() => setIsPasswordOverlayOpen(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
-              >
-                <Lock className="w-4 h-4" />
-                Change Password
-              </button>
-            </div>
-            <p className="text-gray-500 text-sm">Last updated: Never</p>
           </div>
         </div>
-      </div>
 
-      {/* Change Password Overlay */}
-      <ChangePasswordOverlay
-        isOpen={isPasswordOverlayOpen}
-        onClose={() => setIsPasswordOverlayOpen(false)}
-        onSubmit={changePassword}
-      />
+        {/* Change Password Overlay */}
+        <ChangePasswordOverlay
+          isOpen={isPasswordOverlayOpen}
+          onClose={() => setIsPasswordOverlayOpen(false)}
+          onSubmit={changePassword}
+        />
+      </div>
     </div>
   );
 }
