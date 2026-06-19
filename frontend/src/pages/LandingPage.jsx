@@ -2,6 +2,7 @@ import { Moon, Sun } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useDarkMode from "../utils/useDarkMode.js";
 import Wordmark from "../components/Wordmark.jsx";
+import { useAppStore } from "../store";
 
 function ThemeToggle({ isDark, toggle }) {
   return (
@@ -64,6 +65,11 @@ function PagePreview() {
 export default function LandingPage() {
   const [isDark, toggle] = useDarkMode();
   const navigate = useNavigate();
+  const { user, authChecked } = useAppStore();
+  const isLoggedIn = !!user;
+  // Primary "start writing" actions go straight into the app when signed in,
+  // otherwise to signup. Auth links only show once we know there's no session.
+  const startWritingPath = isLoggedIn ? "/home" : "/signup";
 
   return (
     <div className="min-h-screen bg-paper text-ink">
@@ -79,14 +85,16 @@ export default function LandingPage() {
               What it is
             </a>
             <ThemeToggle isDark={isDark} toggle={toggle} />
+            {authChecked && !isLoggedIn && (
+              <button
+                onClick={() => navigate("/login")}
+                className="hidden rounded-full px-3 py-2 text-sm text-muted transition-colors hover:text-ink min-[760px]:block"
+              >
+                Sign in
+              </button>
+            )}
             <button
-              onClick={() => navigate("/login")}
-              className="hidden rounded-full px-3 py-2 text-sm text-muted transition-colors hover:text-ink min-[760px]:block"
-            >
-              Sign in
-            </button>
-            <button
-              onClick={() => navigate("/signup")}
+              onClick={() => navigate(startWritingPath)}
               className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper transition-all hover:-translate-y-px hover:shadow-md"
             >
               Start writing
@@ -118,17 +126,19 @@ export default function LandingPage() {
             </p>
             <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
               <button
-                onClick={() => navigate("/signup")}
+                onClick={() => navigate(startWritingPath)}
                 className="rounded-full bg-ink px-7 py-3.5 text-base font-medium text-paper transition-all hover:-translate-y-px hover:shadow-lg"
               >
-                Open a blank page
+                {isLoggedIn ? "Back to your notes" : "Open a blank page"}
               </button>
-              <button
-                onClick={() => navigate("/login")}
-                className="text-base text-muted underline decoration-line underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
-              >
-                I already have an account
-              </button>
+              {authChecked && !isLoggedIn && (
+                <button
+                  onClick={() => navigate("/login")}
+                  className="text-base text-muted underline decoration-line underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
+                >
+                  I already have an account
+                </button>
+              )}
             </div>
             <p className="mt-10 font-mono text-[11px] uppercase tracking-[0.2em] text-faint">
               Free to use
@@ -191,13 +201,15 @@ export default function LandingPage() {
             The page is already open.
           </h2>
           <p className="mx-auto mt-6 max-w-md text-lg text-muted">
-            Make an account, and your first note is one click away.
+            {isLoggedIn
+              ? "Your notes are right where you left them."
+              : "Make an account, and your first note is one click away."}
           </p>
           <button
-            onClick={() => navigate("/signup")}
+            onClick={() => navigate(startWritingPath)}
             className="mt-9 rounded-full bg-ink px-8 py-4 text-base font-medium text-paper transition-all hover:-translate-y-px hover:shadow-lg"
           >
-            Create your first note
+            {isLoggedIn ? "Open your notes" : "Create your first note"}
           </button>
         </div>
       </section>
@@ -210,18 +222,29 @@ export default function LandingPage() {
             <a href="#what" className="transition-colors hover:text-ink">
               What it is
             </a>
-            <button
-              onClick={() => navigate("/login")}
-              className="transition-colors hover:text-ink"
-            >
-              Sign in
-            </button>
-            <button
-              onClick={() => navigate("/signup")}
-              className="transition-colors hover:text-ink"
-            >
-              Sign up
-            </button>
+            {isLoggedIn ? (
+              <button
+                onClick={() => navigate("/home")}
+                className="transition-colors hover:text-ink"
+              >
+                Open app
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => navigate("/login")}
+                  className="transition-colors hover:text-ink"
+                >
+                  Sign in
+                </button>
+                <button
+                  onClick={() => navigate("/signup")}
+                  className="transition-colors hover:text-ink"
+                >
+                  Sign up
+                </button>
+              </>
+            )}
           </div>
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-faint">
             © 2026 SimpliNotes
