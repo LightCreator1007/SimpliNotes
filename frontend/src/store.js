@@ -10,6 +10,9 @@ export const useAppStore = create((set, get) => ({
   notes: [],
   loading: false,
   error: null,
+  // Set to a note id right after creation so the editor can focus its title.
+  justCreatedId: null,
+  clearJustCreated: () => set({ justCreatedId: null }),
 
   // ===== User =====
   fetchUser: async () => {
@@ -97,7 +100,7 @@ export const useAppStore = create((set, get) => ({
       if (!res.ok) throw new Error("Failed to create note");
       const body = await res.json();
       const newNote = body.data;
-      set({ notes: [newNote, ...get().notes] });
+      set({ notes: [newNote, ...get().notes], justCreatedId: newNote._id });
       return newNote;
     } catch (err) {
       console.error(err);

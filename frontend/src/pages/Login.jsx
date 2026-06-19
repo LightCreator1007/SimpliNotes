@@ -1,46 +1,30 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  AlertCircle,
-  Loader2,
-  FileText,
-} from "lucide-react";
+import { Eye, EyeOff, Loader2, Moon, Sun } from "lucide-react";
 import { useAppStore } from "../store";
+import useDarkMode from "../utils/useDarkMode.js";
+import Wordmark from "../components/Wordmark.jsx";
 
 export default function Login() {
   const navigate = useNavigate();
   const setUser = useAppStore((state) => state.setUser);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [isDark, toggleTheme] = useDarkMode();
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    // Clear error when user starts typing
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (error) setError("");
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation
     if (!formData.email || !formData.password) {
-      setError("Please fill in all fields");
+      setError("Please fill in both fields");
       return;
     }
 
@@ -50,9 +34,7 @@ export default function Login() {
     try {
       const response = await fetch("/api/user/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
           email: formData.email,
@@ -69,122 +51,134 @@ export default function Login() {
         }
         navigate("/home");
       } else {
-        setError(data.message || "Invalid email or password");
+        setError(data.message || "That email and password don't match");
       }
     } catch (err) {
-      setError("Network error. Please check your connection and try again.");
+      setError("Network error. Check your connection and try again.");
       console.error("Login error:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  const inputClass =
+    "w-full rounded-lg border border-line bg-paper px-4 py-3 text-ink placeholder:text-faint transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-soft";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center space-x-2 mb-2">
-            <div className="w-10 h-10 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center">
-              <FileText className="w-6 h-6 text-white dark:text-gray-900" />
-            </div>
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">
-              SimpliNotes
-            </span>
+    <div className="flex min-h-screen flex-col bg-paper text-ink">
+      <header className="flex items-center justify-between px-6 py-5">
+        <Wordmark to="/" size="sm" />
+        <button
+          onClick={toggleTheme}
+          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          className="grid h-9 w-9 place-items-center rounded-full text-muted transition-colors hover:bg-accent-soft hover:text-ink"
+        >
+          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </button>
+      </header>
+
+      <main className="flex flex-1 items-center justify-center px-6 py-10">
+        <div className="w-full max-w-sm rise">
+          <div className="mb-8">
+            <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent">
+              Welcome back
+            </p>
+            <h1 className="mt-3 font-display text-4xl font-medium tracking-tight text-ink">
+              Pick up where you left off.
+            </h1>
           </div>
-          <p className="text-gray-600 dark:text-gray-400">
-            Welcome back! Sign in to continue
-          </p>
-        </div>
 
-        {/* Login Form */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center">
-              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mr-2 flex-shrink-0" />
-              <span className="text-sm text-red-700 dark:text-red-300">
+          <div className="rounded-2xl border border-line bg-surface p-7 shadow-[0_20px_50px_-30px_rgba(28,27,23,0.35)]">
+            {error && (
+              <div
+                role="alert"
+                className="mb-5 rounded-lg border-l-2 border-danger bg-danger/10 px-4 py-3 text-sm text-danger"
+              >
                 {error}
-              </span>
-            </div>
-          )}
+              </div>
+            )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Email
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="mb-2 block text-sm font-medium text-muted"
+                >
+                  Email
+                </label>
                 <input
+                  id="email"
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
-                  placeholder="Enter your email"
+                  className={inputClass}
+                  placeholder="you@example.com"
                   autoComplete="email"
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors"
-                  placeholder="Enter your password"
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              <div>
+                <label
+                  htmlFor="password"
+                  className="mb-2 block text-sm font-medium text-muted"
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
-                </button>
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className={`${inputClass} pr-11`}
+                    placeholder="Your password"
+                    autoComplete="current-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-faint transition-colors hover:text-ink"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                "Sign In"
-              )}
-            </button>
-          </form>
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Don't have an account?{" "}
-              <a
-                href="/signup"
-                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex w-full items-center justify-center rounded-lg bg-ink py-3 font-medium text-paper transition-all hover:-translate-y-px hover:shadow-md disabled:translate-y-0 disabled:opacity-50"
               >
-                Sign up for free
-              </a>
-            </p>
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in
+                  </>
+                ) : (
+                  "Sign in"
+                )}
+              </button>
+            </form>
           </div>
+
+          <p className="mt-6 text-center text-sm text-muted">
+            New here?{" "}
+            <a
+              href="/signup"
+              className="font-medium text-accent underline decoration-line underline-offset-4 transition-colors hover:decoration-accent"
+            >
+              Make an account
+            </a>
+          </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

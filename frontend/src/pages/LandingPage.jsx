@@ -1,285 +1,233 @@
-import { useState, useEffect } from "react";
-import {
-  FileText,
-  Zap,
-  Moon,
-  Sun,
-  Check,
-  ArrowRight,
-  Sparkles,
-  Cloud,
-} from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import useDarkMode from "../utils/useDarkMode.js";
+import Wordmark from "../components/Wordmark.jsx";
 
-function useTypewriter(text, speed = 100) {
-  const [displayText, setDisplayText] = useState("");
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
-
-  useEffect(() => {
-    if (currentIndex < text.length) {
-      const timeout = setTimeout(() => {
-        setDisplayText((prev) => prev + text[currentIndex]);
-        setCurrentIndex((prev) => prev + 1);
-      }, speed);
-      return () => clearTimeout(timeout);
-    } else {
-      setIsComplete(true);
-    }
-  }, [currentIndex, text, speed]);
-
-  return { displayText, isComplete };
+function ThemeToggle({ isDark, toggle }) {
+  return (
+    <button
+      onClick={toggle}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      className="grid h-9 w-9 place-items-center rounded-full text-muted transition-colors hover:bg-accent-soft hover:text-ink"
+    >
+      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+    </button>
+  );
 }
 
-function Header({ isLoggedIn = false, isDarkMode, setIsDarkMode }) {
-  const navigate = useNavigate();
-  const toggleDarkMode = () => {
-    const newDarkMode = !isDarkMode;
-    setIsDarkMode(newDarkMode);
-    localStorage.setItem("darkMode", newDarkMode.toString());
-  };
-
+/* A faithful preview of the editor itself: the page is the hero. */
+function PagePreview() {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50">
-      <nav className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center">
-              <FileText className="w-5 h-5 text-white dark:text-gray-900" />
-            </div>
-            <span className="font-bold text-xl text-gray-900 dark:text-white">
-              SimpliNotes
-            </span>
-          </div>
-          <div className="hidden md:flex items-center space-x-8">
-            <a
-              href="#features"
-              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              Features
-            </a>
-            <a
-              href="#about"
-              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              About
-            </a>
-            <button
-              onClick={toggleDarkMode}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-              aria-label="Toggle dark mode"
-            >
-              {isDarkMode ? (
-                <Sun className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-              ) : (
-                <Moon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-              )}
-            </button>
-
-            {isLoggedIn ? (
-              <button
-                className="px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
-                onClick={() => navigate("/home")}
-              >
-                Dashboard
-              </button>
-            ) : (
-              <button
-                className="px-4 py-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
-                onClick={() => navigate("/signup")}
-              >
-                Sign In
-              </button>
-            )}
-          </div>
+    <div className="rounded-xl border border-line bg-surface shadow-[0_24px_60px_-30px_rgba(28,27,23,0.4)]">
+      <div className="flex items-center justify-between border-b border-line px-5 py-3">
+        <span className="font-display text-sm text-muted">Reading list</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-faint">
+          Saved
+        </span>
+      </div>
+      <div className="px-5 py-6">
+        <div className="border-l-2 border-accent pl-5">
+          <h3 className="font-display text-xl font-semibold text-ink">
+            Books for the winter
+          </h3>
+          <p className="mt-2 font-display text-[0.95rem] leading-relaxed text-muted">
+            A few to get to before the year turns over.
+          </p>
+          <ul className="mt-4 space-y-2 font-display text-[0.95rem] text-ink">
+            <li className="flex items-start gap-3">
+              <span className="mt-1 grid h-4 w-4 place-items-center rounded-[3px] border border-accent bg-accent text-[10px] font-bold text-paper">
+                ✓
+              </span>
+              <span className="text-muted line-through">
+                A Pattern Language
+              </span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="mt-1 h-4 w-4 rounded-[3px] border border-faint" />
+              <span>The Elements of Typographic Style</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="mt-1 h-4 w-4 rounded-[3px] border border-faint" />
+              <span>The Name of the Rose</span>
+            </li>
+          </ul>
         </div>
-      </nav>
-    </header>
+      </div>
+      <div className="flex items-center gap-4 border-t border-line px-5 py-3 font-mono text-[10px] uppercase tracking-[0.16em] text-faint">
+        <span>34 words</span>
+        <span>3 lines</span>
+      </div>
+    </div>
   );
 }
 
 export default function LandingPage() {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const saved = localStorage.getItem("darkMode");
-    return saved === "true";
-  });
-
+  const [isDark, toggle] = useDarkMode();
   const navigate = useNavigate();
 
-  const { displayText, isComplete } = useTypewriter(
-    "Where thoughts become clarity.",
-    50
-  );
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-    localStorage.setItem("darkMode", isDarkMode.toString());
-  }, [isDarkMode]);
-
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
-      <Header
-        isLoggedIn={false}
-        isDarkMode={isDarkMode}
-        setIsDarkMode={setIsDarkMode}
-      />
-      <section className="pt-32 pb-20 px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 h-20">
-              <span className="block text-gray-900 dark:text-white w-3xl ml-auto mr-auto">
-                {displayText}
-                <span
-                  className={`inline-block w-1 h-12 md:h-16 bg-gray-900 dark:bg-white ml-1 ${
-                    isComplete ? "animate-pulse" : "animate-blink"
-                  }`}
-                ></span>
-              </span>
-            </h1>
+    <div className="min-h-screen bg-paper text-ink">
+      {/* Nav */}
+      <header className="sticky top-0 z-50 border-b border-line/70 bg-paper/85 backdrop-blur-md">
+        <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          <Wordmark to="/" />
+          <div className="flex items-center gap-1 sm:gap-3">
+            <a
+              href="#what"
+              className="hidden rounded-full px-3 py-2 text-sm text-muted transition-colors hover:text-ink min-[760px]:block"
+            >
+              What it is
+            </a>
+            <ThemeToggle isDark={isDark} toggle={toggle} />
+            <button
+              onClick={() => navigate("/login")}
+              className="hidden rounded-full px-3 py-2 text-sm text-muted transition-colors hover:text-ink min-[760px]:block"
+            >
+              Sign in
+            </button>
+            <button
+              onClick={() => navigate("/signup")}
+              className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper transition-all hover:-translate-y-px hover:shadow-md"
+            >
+              Start writing
+            </button>
+          </div>
+        </nav>
+      </header>
 
-            <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto mt-26">
-              A minimalist note-taking app that strips away the clutter. Just
-              you, your thoughts, and perfect simplicity.
+      {/* Hero */}
+      <section className="mx-auto max-w-6xl px-6 pb-20 pt-16 sm:pt-24">
+        <div className="grid items-center gap-14 min-[900px]:grid-cols-[1.05fr_0.95fr]">
+          <div className="rise">
+            <p className="font-mono text-[11px] uppercase tracking-[0.32em] text-accent">
+              A markdown notebook
             </p>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <h1 className="mt-6 font-display text-[2.7rem] font-medium leading-[1.04] tracking-tight text-ink min-[900px]:text-[3.6rem]">
+              Write first.
+              <br />
+              <span className="italic text-muted">The rest can wait</span>
+              <span
+                className="caret ml-3 relative top-[2px] h-[0.8em]"
+                aria-hidden="true"
+              />
+            </h1>
+            <p className="mt-7 max-w-md text-lg leading-relaxed text-muted">
+              SimpliNotes keeps one clean page in front of you. Markdown when
+              you want it, plain words when you don't, and every keystroke saved
+              on its own.
+            </p>
+            <div className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4">
               <button
-                className="group px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 flex items-center justify-center"
                 onClick={() => navigate("/signup")}
+                className="rounded-full bg-ink px-7 py-3.5 text-base font-medium text-paper transition-all hover:-translate-y-px hover:shadow-lg"
               >
-                Start Writing Free
-                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                Open a blank page
+              </button>
+              <button
+                onClick={() => navigate("/login")}
+                className="text-base text-muted underline decoration-line underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
+              >
+                I already have an account
               </button>
             </div>
-            <div className="mt-12 flex items-center justify-center space-x-8 text-sm text-gray-500 dark:text-gray-500">
-              <span className="flex items-center">
-                <Check className="w-4 h-4 mr-1" />
-                Free forever plan
-              </span>
-              <span className="flex items-center">
-                <Check className="w-4 h-4 mr-1" />
-                Export anytime
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section
-        id="features"
-        className="py-20 px-6 lg:px-8 bg-gray-50 dark:bg-gray-800/50"
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Everything you need. Nothing you don't.
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400">
-              Powerful features wrapped in simplicity.
+            <p className="mt-10 font-mono text-[11px] uppercase tracking-[0.2em] text-faint">
+              Free to use
+              <span className="mx-3 text-line">/</span>
+              Works in light and dark
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center mb-6">
-                <Zap className="w-6 h-6 text-gray-700 dark:text-gray-300" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Lightning Fast</h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Instant load times and real-time sync. Your thoughts move at the
-                speed of light.
-              </p>
-            </div>
-
-            <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center mb-6">
-                <Cloud className="w-6 h-6 text-gray-700 dark:text-gray-300" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">
-                Available Everywhere
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Access your notes from any device. Seamless sync across all
-                platforms.
-              </p>
-            </div>
+          <div className="rise [animation-delay:120ms]">
+            <PagePreview />
           </div>
         </div>
       </section>
 
-      <section className="py-20 px-6 lg:px-8 bg-gray-50 dark:bg-gray-800/50">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to simplify your notes?
+      {/* What it is */}
+      <section id="what" className="border-t border-line">
+        <div className="mx-auto max-w-6xl px-6 py-20">
+          <div className="max-w-xl">
+            <p className="font-mono text-[11px] uppercase tracking-[0.32em] text-faint">
+              What it is
+            </p>
+            <h2 className="mt-4 font-display text-3xl font-medium tracking-tight text-ink sm:text-4xl">
+              A notebook with nothing to learn.
+            </h2>
+          </div>
+
+          <div className="mt-14 grid gap-px overflow-hidden rounded-xl border border-line bg-line min-[900px]:grid-cols-3">
+            {[
+              {
+                title: "Plain markdown",
+                body: "Headings, lists, quotes, code, and checklists. Type the shortcut and the formatting follows. No menus to hunt through.",
+              },
+              {
+                title: "Saves itself",
+                body: "Every keystroke is written the moment you make it. There is no save button here, because you never need to find one.",
+              },
+              {
+                title: "Light and dark",
+                body: "Warm paper by day, quiet ink at night. Your eyes choose the room, and the writing stays exactly the same.",
+              },
+            ].map((item) => (
+              <div key={item.title} className="bg-surface p-8">
+                <div className="mb-5 h-6 w-px bg-accent" aria-hidden="true" />
+                <h3 className="font-display text-xl font-semibold text-ink">
+                  {item.title}
+                </h3>
+                <p className="mt-3 text-[0.95rem] leading-relaxed text-muted">
+                  {item.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Closing */}
+      <section className="border-t border-line">
+        <div className="mx-auto max-w-3xl px-6 py-24 text-center">
+          <h2 className="font-display text-4xl font-medium leading-tight tracking-tight text-ink sm:text-5xl">
+            The page is already open.
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-            Join thousands who've already made the switch to clarity.
+          <p className="mx-auto mt-6 max-w-md text-lg text-muted">
+            Make an account, and your first note is one click away.
           </p>
           <button
-            className="group px-8 py-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-all duration-200 inline-flex items-center"
             onClick={() => navigate("/signup")}
+            className="mt-9 rounded-full bg-ink px-8 py-4 text-base font-medium text-paper transition-all hover:-translate-y-px hover:shadow-lg"
           >
-            Create Your First Note
-            <Sparkles className="w-4 h-4 ml-2 group-hover:rotate-12 transition-transform" />
+            Create your first note
           </button>
         </div>
       </section>
 
-      <footer className="py-12 px-6 lg:px-8 border-t border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <div className="w-8 h-8 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center">
-                <FileText className="w-5 h-5 text-white dark:text-gray-900" />
-              </div>
-              <span className="font-bold text-xl">SimpliNotes</span>
-            </div>
-            <div className="flex space-x-6 text-sm text-gray-600 dark:text-gray-400">
-              <a
-                href="#"
-                className="hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                Privacy
-              </a>
-              <a
-                href="#"
-                className="hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                Terms
-              </a>
-              <a
-                href="#"
-                className="hover:text-gray-900 dark:hover:text-white transition-colors"
-              >
-                Contact
-              </a>
-            </div>
+      {/* Footer */}
+      <footer className="border-t border-line">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 py-10 sm:flex-row">
+          <Wordmark />
+          <div className="flex items-center gap-7 text-sm text-muted">
+            <a href="#what" className="transition-colors hover:text-ink">
+              What it is
+            </a>
+            <button
+              onClick={() => navigate("/login")}
+              className="transition-colors hover:text-ink"
+            >
+              Sign in
+            </button>
+            <button
+              onClick={() => navigate("/signup")}
+              className="transition-colors hover:text-ink"
+            >
+              Sign up
+            </button>
           </div>
-          <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-500">
-            © 2025 SimpliNotes. Crafted with care for focused minds.
-          </div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-faint">
+            © 2026 SimpliNotes
+          </p>
         </div>
       </footer>
-
-      <style>{`
-        @keyframes blink {
-          0%,
-          50% {
-            opacity: 1;
-          }
-          51%,
-          100% {
-            opacity: 0;
-          }
-        }
-        .animate-blink {
-          animation: blink 1s infinite;
-        }
-      `}</style>
     </div>
   );
 }

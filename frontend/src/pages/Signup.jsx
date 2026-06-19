@@ -1,22 +1,13 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  User,
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  Camera,
-  X,
-  CheckCircle,
-  AlertCircle,
-  Loader2,
-  FileText,
-} from "lucide-react";
+import { Eye, EyeOff, Loader2, X, Moon, Sun } from "lucide-react";
+import useDarkMode from "../utils/useDarkMode.js";
+import Wordmark from "../components/Wordmark.jsx";
 
 export default function SignUp() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const [isDark, toggleTheme] = useDarkMode();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -36,15 +27,9 @@ export default function SignUp() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (fieldErrors[name]) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
+      setFieldErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
@@ -52,20 +37,16 @@ export default function SignUp() {
     const file = e.target.files[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
-        setError("Please select an image file");
+        setError("Please choose an image file");
         return;
       }
-
       if (file.size > 5 * 1024 * 1024) {
-        setError("Image size should be less than 5MB");
+        setError("Image must be under 5MB");
         return;
       }
       setAvatar(file);
-
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result);
-      };
+      reader.onloadend = () => setAvatarPreview(reader.result);
       reader.readAsDataURL(file);
       setError("");
     }
@@ -74,48 +55,38 @@ export default function SignUp() {
   const removeAvatar = () => {
     setAvatar(null);
     setAvatarPreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const validateForm = () => {
     const errors = {};
-
     if (!formData.username.trim()) {
       errors.username = "Username is required";
     } else if (formData.username.length < 3) {
-      errors.username = "Username must be at least 3 characters";
+      errors.username = "Use at least 3 characters";
     }
-
     if (!formData.email.trim()) {
       errors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Please enter a valid email";
+      errors.email = "Enter a valid email";
     }
-
     if (!formData.password) {
       errors.password = "Password is required";
     } else if (formData.password.length < 6) {
-      errors.password = "Password must be at least 6 characters";
+      errors.password = "Use at least 6 characters";
     }
-
     if (!formData.confirmPassword) {
       errors.confirmPassword = "Please confirm your password";
     } else if (formData.password !== formData.confirmPassword) {
       errors.confirmPassword = "Passwords do not match";
     }
-
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
     setError("");
@@ -125,10 +96,7 @@ export default function SignUp() {
       formDataToSend.append("username", formData.username);
       formDataToSend.append("email", formData.email);
       formDataToSend.append("password", formData.password);
-
-      if (avatar) {
-        formDataToSend.append("avatar", avatar);
-      }
+      if (avatar) formDataToSend.append("avatar", avatar);
 
       const response = await fetch(`/api/user/register`, {
         method: "POST",
@@ -141,252 +109,235 @@ export default function SignUp() {
       if (response.ok) {
         setSuccess(true);
         setError("");
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
+        setTimeout(() => navigate("/login"), 2000);
       } else {
-        setError(data.message || "Registration failed. Please try again.");
+        setError(data.message || "Could not create the account. Try again.");
       }
     } catch (err) {
-      setError("Network error. Please check your connection and try again.");
+      setError("Network error. Check your connection and try again.");
       console.error("Registration error:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  const fieldClass = (name) =>
+    `w-full rounded-lg border bg-paper px-4 py-3 text-ink placeholder:text-faint transition-colors focus:outline-none focus:ring-2 focus:ring-accent-soft ${
+      fieldErrors[name]
+        ? "border-danger focus:border-danger"
+        : "border-line focus:border-accent"
+    }`;
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center space-x-2 mb-2">
-            <div className="w-10 h-10 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center">
-              <FileText className="w-6 h-6 text-white dark:text-gray-900" />
-            </div>
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">
-              SimpliNotes
-            </span>
+    <div className="flex min-h-screen flex-col bg-paper text-ink">
+      <header className="flex items-center justify-between px-6 py-5">
+        <Wordmark to="/" size="sm" />
+        <button
+          onClick={toggleTheme}
+          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          className="grid h-9 w-9 place-items-center rounded-full text-muted transition-colors hover:bg-accent-soft hover:text-ink"
+        >
+          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </button>
+      </header>
+
+      <main className="flex flex-1 items-center justify-center px-6 py-10">
+        <div className="w-full max-w-sm rise">
+          <div className="mb-8">
+            <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent">
+              New notebook
+            </p>
+            <h1 className="mt-3 font-display text-4xl font-medium tracking-tight text-ink">
+              Make an account.
+            </h1>
           </div>
-          <p className="text-gray-600 dark:text-gray-400">
-            Create your account to get started
-          </p>
-        </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-          {success && (
-            <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center">
-              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mr-2 flex-shrink-0" />
-              <span className="text-sm text-green-700 dark:text-green-300">
-                Account created successfully! Redirecting to login...
-              </span>
-            </div>
-          )}
-
-          {error && (
-            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center">
-              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mr-2 flex-shrink-0" />
-              <span className="text-sm text-red-700 dark:text-red-300">
+          <div className="rounded-2xl border border-line bg-surface p-7 shadow-[0_20px_50px_-30px_rgba(28,27,23,0.35)]">
+            {success && (
+              <div
+                role="status"
+                className="mb-5 rounded-lg border-l-2 border-accent bg-accent-soft px-4 py-3 text-sm text-ink"
+              >
+                Account created. Taking you to sign in.
+              </div>
+            )}
+            {error && (
+              <div
+                role="alert"
+                className="mb-5 rounded-lg border-l-2 border-danger bg-danger/10 px-4 py-3 text-sm text-danger"
+              >
                 {error}
-              </span>
-            </div>
-          )}
+              </div>
+            )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="flex flex-col items-center">
-              <div className="relative">
-                <div className="w-24 h-24 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
-                  {avatarPreview ? (
-                    <img
-                      src={avatarPreview}
-                      alt="Avatar preview"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <User className="w-12 h-12 text-gray-400 dark:text-gray-500" />
-                  )}
-                </div>
-                {avatarPreview && (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Optional photo */}
+              <div className="flex flex-col items-center">
+                <div className="relative">
                   <button
                     type="button"
-                    onClick={removeAvatar}
-                    className="absolute -top-1 -right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="grid h-20 w-20 place-items-center overflow-hidden rounded-full border border-line bg-paper text-[10px] font-mono uppercase tracking-[0.15em] text-faint transition-colors hover:border-accent hover:text-accent"
                   >
-                    <X className="w-4 h-4" />
+                    {avatarPreview ? (
+                      <img
+                        src={avatarPreview}
+                        alt="Profile preview"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      "Photo"
+                    )}
                   </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute -bottom-1 -right-1 p-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
-                >
-                  <Camera className="w-4 h-4" />
-                </button>
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarChange}
-                className="hidden"
-              />
-              <span className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                Optional: Upload profile picture
-              </span>
-            </div>
-
-            {/* Username Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Username
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  {avatarPreview && (
+                    <button
+                      type="button"
+                      onClick={removeAvatar}
+                      aria-label="Remove photo"
+                      className="absolute -right-1 -top-1 grid h-6 w-6 place-items-center rounded-full bg-ink text-paper shadow-sm transition-transform hover:scale-105"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
                 <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                />
+                <span className="mt-2 text-xs text-faint">Optional profile photo</span>
+              </div>
+
+              <div>
+                <label htmlFor="username" className="mb-2 block text-sm font-medium text-muted">
+                  Username
+                </label>
+                <input
+                  id="username"
                   type="text"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors ${
-                    fieldErrors.username
-                      ? "border-red-500 dark:border-red-400"
-                      : "border-gray-300 dark:border-gray-600"
-                  }`}
+                  className={fieldClass("username")}
                   placeholder="Choose a username"
                 />
+                {fieldErrors.username && (
+                  <p className="mt-1.5 text-xs text-danger">
+                    {fieldErrors.username}
+                  </p>
+                )}
               </div>
-              {fieldErrors.username && (
-                <p className="mt-1 text-xs text-red-600 dark:text-red-400">
-                  {fieldErrors.username}
-                </p>
-              )}
-            </div>
 
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Email
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <div>
+                <label htmlFor="signup-email" className="mb-2 block text-sm font-medium text-muted">
+                  Email
+                </label>
                 <input
+                  id="signup-email"
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors ${
-                    fieldErrors.email
-                      ? "border-red-500 dark:border-red-400"
-                      : "border-gray-300 dark:border-gray-600"
-                  }`}
-                  placeholder="Enter your email"
+                  className={fieldClass("email")}
+                  placeholder="you@example.com"
                 />
+                {fieldErrors.email && (
+                  <p className="mt-1.5 text-xs text-danger">
+                    {fieldErrors.email}
+                  </p>
+                )}
               </div>
-              {fieldErrors.email && (
-                <p className="mt-1 text-xs text-red-600 dark:text-red-400">
-                  {fieldErrors.email}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className={`w-full pl-10 pr-12 py-3 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors ${
-                    fieldErrors.password
-                      ? "border-red-500 dark:border-red-400"
-                      : "border-gray-300 dark:border-gray-600"
-                  }`}
-                  placeholder="Create a password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
-                </button>
+
+              <div>
+                <label htmlFor="signup-password" className="mb-2 block text-sm font-medium text-muted">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="signup-password"
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className={`${fieldClass("password")} pr-11`}
+                    placeholder="Create a password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-faint transition-colors hover:text-ink"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                {fieldErrors.password && (
+                  <p className="mt-1.5 text-xs text-danger">
+                    {fieldErrors.password}
+                  </p>
+                )}
               </div>
-              {fieldErrors.password && (
-                <p className="mt-1 text-xs text-red-600 dark:text-red-400">
-                  {fieldErrors.password}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Confirm Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className={`w-full pl-10 pr-12 py-3 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-colors ${
-                    fieldErrors.confirmPassword
-                      ? "border-red-500 dark:border-red-400"
-                      : "border-gray-300 dark:border-gray-600"
-                  }`}
-                  placeholder="Confirm your password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
-                </button>
+
+              <div>
+                <label htmlFor="confirm-password" className="mb-2 block text-sm font-medium text-muted">
+                  Confirm password
+                </label>
+                <div className="relative">
+                  <input
+                    id="confirm-password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className={`${fieldClass("confirmPassword")} pr-11`}
+                    placeholder="Type it again"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-faint transition-colors hover:text-ink"
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                {fieldErrors.confirmPassword && (
+                  <p className="mt-1.5 text-xs text-danger">
+                    {fieldErrors.confirmPassword}
+                  </p>
+                )}
               </div>
-              {fieldErrors.confirmPassword && (
-                <p className="mt-1 text-xs text-red-600 dark:text-red-400">
-                  {fieldErrors.confirmPassword}
-                </p>
-              )}
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Creating account...
-                </>
-              ) : (
-                "Sign Up"
-              )}
-            </button>
-          </form>
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Already have an account?{" "}
-              <a
-                href="/login"
-                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex w-full items-center justify-center rounded-lg bg-ink py-3 font-medium text-paper transition-all hover:-translate-y-px hover:shadow-md disabled:translate-y-0 disabled:opacity-50"
               >
-                Sign in
-              </a>
-            </p>
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating account
+                  </>
+                ) : (
+                  "Create account"
+                )}
+              </button>
+            </form>
           </div>
+
+          <p className="mt-6 text-center text-sm text-muted">
+            Already have one?{" "}
+            <a
+              href="/login"
+              className="font-medium text-accent underline decoration-line underline-offset-4 transition-colors hover:decoration-accent"
+            >
+              Sign in
+            </a>
+          </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../store";
-import { User, Camera, Edit2, Save, X, Lock, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, X, Moon, Sun, ArrowLeft } from "lucide-react";
+import useDarkMode from "../utils/useDarkMode.js";
+
+const inputClass =
+  "w-full rounded-lg border border-line bg-paper px-3 py-2.5 text-ink placeholder:text-faint transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-soft";
 
 function ChangePasswordOverlay({ isOpen, onClose, onSubmit }) {
   const [passwordData, setPasswordData] = useState({
@@ -18,24 +23,16 @@ function ChangePasswordOverlay({ isOpen, onClose, onSubmit }) {
 
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
-    setPasswordData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    setError(""); // Clear error when user types
+    setPasswordData((prev) => ({ ...prev, [name]: value }));
+    setError("");
   };
 
   const togglePasswordVisibility = (field) => {
-    setShowPasswords((prev) => ({
-      ...prev,
-      [field]: !prev[field],
-    }));
+    setShowPasswords((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
   const handleSubmit = async () => {
     setError("");
-
-    // Validation
     if (
       !passwordData.currentPassword ||
       !passwordData.newPassword ||
@@ -44,19 +41,16 @@ function ChangePasswordOverlay({ isOpen, onClose, onSubmit }) {
       setError("All fields are required");
       return;
     }
-
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       setError("New passwords don't match");
       return;
     }
-
     if (passwordData.newPassword.length < 8) {
-      setError("New password must be at least 8 characters long");
+      setError("New password must be at least 8 characters");
       return;
     }
-
     if (passwordData.currentPassword === passwordData.newPassword) {
-      setError("New password must be different from current password");
+      setError("New password must be different from the current one");
       return;
     }
 
@@ -70,7 +64,7 @@ function ChangePasswordOverlay({ isOpen, onClose, onSubmit }) {
       });
       onClose();
     } catch (err) {
-      setError(err.message || "Failed to change password");
+      setError(err.message || "Could not change password");
     } finally {
       setIsLoading(false);
     }
@@ -89,129 +83,80 @@ function ChangePasswordOverlay({ isOpen, onClose, onSubmit }) {
 
   if (!isOpen) return null;
 
+  const fields = [
+    { name: "currentPassword", label: "Current password", key: "current", placeholder: "Enter current password", hint: null },
+    { name: "newPassword", label: "New password", key: "new", placeholder: "Enter new password", hint: "At least 8 characters" },
+    { name: "confirmPassword", label: "Confirm new password", key: "confirm", placeholder: "Repeat new password", hint: null },
+  ];
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b dark:border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Lock className="w-5 h-5" />
-            Change Password
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="w-full max-w-md rounded-2xl border border-line bg-surface shadow-2xl">
+        <div className="flex items-center justify-between border-b border-line px-6 py-4">
+          <h2 className="font-display text-xl font-semibold text-ink">
+            Change password
           </h2>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            aria-label="Close"
+            className="grid h-8 w-8 place-items-center rounded-full text-faint transition-colors hover:bg-accent-soft hover:text-ink"
           >
-            <X className="w-5 h-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="p-6 space-y-4">
+        <div className="space-y-4 p-6">
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-md text-sm">
+            <div className="rounded-lg border-l-2 border-danger bg-danger/10 px-4 py-3 text-sm text-danger">
               {error}
             </div>
           )}
 
-          {/* Current Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Current Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPasswords.current ? "text" : "password"}
-                name="currentPassword"
-                value={passwordData.currentPassword}
-                onChange={handlePasswordChange}
-                className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter current password"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => togglePasswordVisibility("current")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                {showPasswords.current ? (
-                  <EyeOff className="w-4 h-4" />
-                ) : (
-                  <Eye className="w-4 h-4" />
-                )}
-              </button>
+          {fields.map((field) => (
+            <div key={field.name}>
+              <label className="mb-2 block text-sm font-medium text-muted">
+                {field.label}
+              </label>
+              <div className="relative">
+                <input
+                  type={showPasswords[field.key] ? "text" : "password"}
+                  name={field.name}
+                  value={passwordData[field.name]}
+                  onChange={handlePasswordChange}
+                  className={`${inputClass} pr-11`}
+                  placeholder={field.placeholder}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => togglePasswordVisibility(field.key)}
+                  aria-label="Toggle password visibility"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-faint transition-colors hover:text-ink"
+                >
+                  {showPasswords[field.key] ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+              {field.hint && (
+                <p className="mt-1 text-xs text-faint">{field.hint}</p>
+              )}
             </div>
-          </div>
+          ))}
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              New Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPasswords.new ? "text" : "password"}
-                name="newPassword"
-                value={passwordData.newPassword}
-                onChange={handlePasswordChange}
-                className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter new password"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => togglePasswordVisibility("new")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                {showPasswords.new ? (
-                  <EyeOff className="w-4 h-4" />
-                ) : (
-                  <Eye className="w-4 h-4" />
-                )}
-              </button>
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Must be at least 8 characters long
-            </p>
-          </div>
-
-          {/* Confirm New Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Confirm New Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPasswords.confirm ? "text" : "password"}
-                name="confirmPassword"
-                value={passwordData.confirmPassword}
-                onChange={handlePasswordChange}
-                className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Confirm new password"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => togglePasswordVisibility("confirm")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                {showPasswords.confirm ? (
-                  <EyeOff className="w-4 h-4" />
-                ) : (
-                  <Eye className="w-4 h-4" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-2">
             <button
               onClick={handleSubmit}
               disabled={isLoading}
-              className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="flex-1 rounded-lg bg-ink py-2.5 font-medium text-paper transition-all hover:-translate-y-px hover:shadow-md disabled:translate-y-0 disabled:opacity-50"
             >
-              {isLoading ? "Changing..." : "Change Password"}
+              {isLoading ? "Changing" : "Change password"}
             </button>
             <button
               onClick={handleClose}
-              className="flex-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 py-2 px-4 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+              className="rounded-lg border border-line px-4 py-2.5 text-muted transition-colors hover:text-ink"
             >
               Cancel
             </button>
@@ -222,12 +167,18 @@ function ChangePasswordOverlay({ isOpen, onClose, onSubmit }) {
   );
 }
 
-// Main Account Component
 export default function Account() {
   const fileInputRef = useRef(null);
+  const [isDark, toggleTheme] = useDarkMode();
+  const navigate = useNavigate();
 
-  const { user, updateUser, changeAvatar, fetchUser, changePassword } =
+  const { user, updateUser, changeAvatar, fetchUser, changePassword, logout } =
     useAppStore();
+
+  const handleSignOut = async () => {
+    await logout();
+    navigate("/");
+  };
   const [avatar, setAvatar] = useState(user?.avatar);
   const [isEditingPic, setIsEditingPic] = useState(false);
   const [isEditingUser, setIsEditingUser] = useState(false);
@@ -243,21 +194,25 @@ export default function Account() {
 
   useEffect(() => {
     if (user) {
-      setFormData({
-        username: user.username || "",
-        email: user.email || "",
-      });
+      setFormData({ username: user.username || "", email: user.email || "" });
       setAvatar(user.avatar);
       setAvatarPreview(user.avatar);
     }
   }, [user]);
 
+  const getInitials = (name = "") =>
+    name
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase() || "?";
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     setError(null);
     setSuccess(null);
   };
@@ -266,21 +221,16 @@ export default function Account() {
     const file = e.target.files[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
-        setError("Please select an image file");
+        setError("Please choose an image file");
         return;
       }
-
       if (file.size > 5 * 1024 * 1024) {
-        setError("Image size should be less than 5MB");
+        setError("Image must be under 5MB");
         return;
       }
-
       setAvatar(file);
-
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result);
-      };
+      reader.onloadend = () => setAvatarPreview(reader.result);
       reader.readAsDataURL(file);
       setError(null);
     }
@@ -289,9 +239,7 @@ export default function Account() {
   const removeAvatar = () => {
     setAvatar(null);
     setAvatarPreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
     setError(null);
   };
 
@@ -299,7 +247,6 @@ export default function Account() {
     setIsLoading(true);
     setError(null);
     setSuccess(null);
-
     try {
       let result;
       if (avatar instanceof File) {
@@ -314,14 +261,14 @@ export default function Account() {
       }
 
       if (result.success) {
-        setSuccess("Avatar updated successfully!");
+        setSuccess("Profile photo updated");
         setIsEditingPic(false);
         await fetchUser();
       } else {
-        setError(result.message || "Failed to update avatar");
+        setError(result.message || "Could not update photo");
       }
     } catch (err) {
-      setError(err.message || "Failed to update avatar");
+      setError(err.message || "Could not update photo");
     } finally {
       setIsLoading(false);
     }
@@ -332,9 +279,7 @@ export default function Account() {
     setAvatarPreview(user?.avatar);
     setIsEditingPic(false);
     setError(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleUserDetailsSave = async () => {
@@ -347,7 +292,6 @@ export default function Account() {
       setIsLoading(false);
       return;
     }
-
     if (!/\S+@\S+\.\S+/.test(formData.email)) {
       setError("Please enter a valid email address");
       setIsLoading(false);
@@ -357,269 +301,277 @@ export default function Account() {
     try {
       const result = await updateUser(formData);
       if (result.success) {
-        setSuccess("Profile updated successfully!");
+        setSuccess("Profile updated");
         setIsEditingUser(false);
         await fetchUser();
       } else {
-        setError(result.message || "Failed to update profile");
+        setError(result.message || "Could not update profile");
       }
     } catch (err) {
-      setError(err.message || "Failed to update profile");
+      setError(err.message || "Could not update profile");
     } finally {
       setIsLoading(false);
     }
   };
 
   const cancelUserEdit = () => {
-    setFormData({
-      username: user?.username || "",
-      email: user?.email || "",
-    });
+    setFormData({ username: user?.username || "", email: user?.email || "" });
     setIsEditingUser(false);
     setError(null);
     setSuccess(null);
   };
 
+  const secondaryBtn =
+    "rounded-lg border border-line bg-paper px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-accent hover:text-accent";
+  const primaryBtn =
+    "rounded-lg bg-ink px-4 py-2 text-sm font-medium text-paper transition-all hover:-translate-y-px hover:shadow-md disabled:translate-y-0 disabled:opacity-50";
+  const ghostBtn =
+    "rounded-lg border border-line px-4 py-2 text-sm text-muted transition-colors hover:text-ink";
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      <div className="max-w-4xl mx-auto p-6 space-y-8">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700">
-          <div className="px-6 py-4 border-b dark:border-gray-700">
-            <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-              Account Settings
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Manage your account information and preferences
-            </p>
+    <div className="min-h-screen bg-paper text-ink">
+      <header className="flex items-center justify-between border-b border-line px-6 py-3.5">
+        <button
+          onClick={() => navigate("/home")}
+          aria-label="Back to notes"
+          className="flex items-center gap-2.5 rounded-sm"
+        >
+          <ArrowLeft className="h-[18px] w-[18px] text-muted" />
+          <span className="font-display text-[1.32rem] font-semibold tracking-tight text-ink">
+            Simpli<span className="text-accent">Notes</span>
+          </span>
+        </button>
+        <button
+          onClick={toggleTheme}
+          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+          className="grid h-9 w-9 place-items-center rounded-full text-muted transition-colors hover:bg-accent-soft hover:text-ink"
+        >
+          {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </button>
+      </header>
+
+      <div className="mx-auto max-w-3xl px-6 py-12">
+        <div className="mb-8">
+          <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-accent">
+            Account
+          </p>
+          <h1 className="mt-3 font-display text-4xl font-medium tracking-tight text-ink">
+            Account settings
+          </h1>
+          <p className="mt-2 text-muted">
+            Manage your details and how you sign in.
+          </p>
+        </div>
+
+        {error && (
+          <div className="mb-6 rounded-lg border-l-2 border-danger bg-danger/10 px-4 py-3 text-sm text-danger">
+            {error}
           </div>
+        )}
+        {success && (
+          <div className="mb-6 rounded-lg border-l-2 border-accent bg-accent-soft px-4 py-3 text-sm text-ink">
+            {success}
+          </div>
+        )}
 
-          {/* Success/Error Messages */}
-          {error && (
-            <div className="mx-6 mt-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-md">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="mx-6 mt-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 px-4 py-3 rounded-md">
-              {success}
-            </div>
-          )}
-
-          <div className="p-6 space-y-8">
-            {/* Profile Picture Section */}
-            <div className="flex items-start space-x-6">
-              <div className="flex-shrink-0">
-                <div className="relative">
-                  {avatarPreview ? (
-                    <img
-                      src={avatarPreview}
-                      alt="Profile"
-                      className="w-24 h-24 rounded-full object-cover border-4 border-gray-200 dark:border-gray-700"
-                    />
-                  ) : (
-                    <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center border-4 border-gray-200 dark:border-gray-700">
-                      <User className="w-10 h-10 text-gray-400 dark:text-gray-500" />
-                    </div>
-                  )}
-                  {!isEditingPic && (
-                    <button
-                      onClick={() => setIsEditingPic(true)}
-                      className="absolute -bottom-1 -right-1 bg-blue-600 text-white rounded-full p-2 hover:bg-blue-700 transition-colors shadow-lg"
-                    >
-                      <Camera className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex-1">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-                  Profile Picture
-                </h3>
-
-                {!isEditingPic ? (
-                  <div>
-                    <p className="text-gray-600 dark:text-gray-400 mb-3">
-                      Update your profile picture to personalize your account
-                    </p>
-                    <button
-                      onClick={() => setIsEditingPic(true)}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                      Change Picture
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Choose a new profile picture (max 5MB)
-                    </p>
-
-                    <div className="flex flex-wrap gap-3">
-                      <label className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 cursor-pointer transition-colors">
-                        <Camera className="w-4 h-4" />
-                        Choose File
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="image/*"
-                          onChange={handleAvatarChange}
-                          className="hidden"
-                        />
-                      </label>
-
-                      {avatarPreview && (
-                        <button
-                          onClick={removeAvatar}
-                          className="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-md hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
-                        >
-                          Remove Picture
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="flex gap-3">
-                      <button
-                        onClick={handleAvatarSave}
-                        disabled={isLoading}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      >
-                        <Save className="w-4 h-4" />
-                        {isLoading ? "Saving..." : "Save Changes"}
-                      </button>
-                      <button
-                        onClick={cancelAvatarEdit}
-                        className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* User Details Section */}
-            <div className="border-t dark:border-gray-700 pt-8">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                  Personal Information
-                </h3>
-                {!isEditingUser && (
-                  <button
-                    onClick={() => setIsEditingUser(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                    Edit
-                  </button>
-                )}
-              </div>
-
-              {!isEditingUser ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Username
-                    </label>
-                    <p className="text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md">
-                      {user?.username || "Not set"}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Email Address
-                    </label>
-                    <p className="text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-md">
-                      {user?.email || "Not set"}
-                    </p>
-                  </div>
-                </div>
+        <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+          {/* Profile photo */}
+          <section className="flex flex-col gap-6 p-7 sm:flex-row sm:items-start">
+            <div className="shrink-0">
+              {avatarPreview ? (
+                <img
+                  src={avatarPreview}
+                  alt="Profile"
+                  className="h-24 w-24 rounded-full border border-line object-cover"
+                />
               ) : (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Username
-                      </label>
-                      <input
-                        type="text"
-                        name="username"
-                        value={formData.username}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Enter your username"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Email Address
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="Enter your email"
-                      />
-                    </div>
-                  </div>
+                <div className="grid h-24 w-24 place-items-center rounded-full bg-ink text-2xl font-medium text-paper">
+                  {getInitials(user?.username)}
+                </div>
+              )}
+            </div>
 
+            <div className="flex-1">
+              <h3 className="font-display text-lg font-semibold text-ink">
+                Profile photo
+              </h3>
+
+              {!isEditingPic ? (
+                <>
+                  <p className="mb-3 mt-1 text-sm text-muted">
+                    A photo helps your notebook feel like yours.
+                  </p>
+                  <button
+                    onClick={() => setIsEditingPic(true)}
+                    className={secondaryBtn}
+                  >
+                    Change photo
+                  </button>
+                </>
+              ) : (
+                <div className="mt-1 space-y-4">
+                  <p className="text-sm text-muted">
+                    Choose a new photo, up to 5MB.
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <label className="cursor-pointer rounded-lg border border-line bg-paper px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-accent hover:text-accent">
+                      Choose file
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarChange}
+                        className="hidden"
+                      />
+                    </label>
+                    {avatarPreview && (
+                      <button
+                        onClick={removeAvatar}
+                        className="rounded-lg px-4 py-2 text-sm font-medium text-danger transition-colors hover:bg-danger/10"
+                      >
+                        Remove photo
+                      </button>
+                    )}
+                  </div>
                   <div className="flex gap-3">
                     <button
-                      onClick={handleUserDetailsSave}
+                      onClick={handleAvatarSave}
                       disabled={isLoading}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className={primaryBtn}
                     >
-                      <Save className="w-4 h-4" />
-                      {isLoading ? "Saving..." : "Save Changes"}
+                      {isLoading ? "Saving" : "Save photo"}
                     </button>
-                    <button
-                      onClick={cancelUserEdit}
-                      className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                    >
+                    <button onClick={cancelAvatarEdit} className={ghostBtn}>
                       Cancel
                     </button>
                   </div>
                 </div>
               )}
             </div>
+          </section>
 
-            {/* Password Section */}
-            <div className="border-t dark:border-gray-700 pt-8">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                    Password
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-                    Keep your account secure with a strong password
-                  </p>
-                </div>
+          {/* Personal information */}
+          <section className="border-t border-line p-7">
+            <div className="mb-6 flex items-center justify-between">
+              <h3 className="font-display text-lg font-semibold text-ink">
+                Personal information
+              </h3>
+              {!isEditingUser && (
                 <button
-                  onClick={() => setIsPasswordOverlayOpen(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  onClick={() => setIsEditingUser(true)}
+                  className={secondaryBtn}
                 >
-                  <Lock className="w-4 h-4" />
-                  Change Password
+                  Edit
                 </button>
+              )}
+            </div>
+
+            {!isEditingUser ? (
+              <div className="grid grid-cols-1 gap-5 min-[560px]:grid-cols-2">
+                <div>
+                  <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.18em] text-faint">
+                    Username
+                  </p>
+                  <p className="text-ink">{user?.username || "Not set"}</p>
+                </div>
+                <div>
+                  <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.18em] text-faint">
+                    Email
+                  </p>
+                  <p className="text-ink">{user?.email || "Not set"}</p>
+                </div>
               </div>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                Last updated: Never
+            ) : (
+              <div className="space-y-5">
+                <div className="grid grid-cols-1 gap-5 min-[560px]:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-muted">
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      name="username"
+                      value={formData.username}
+                      onChange={handleChange}
+                      className={inputClass}
+                      placeholder="Your username"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-muted">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className={inputClass}
+                      placeholder="you@example.com"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleUserDetailsSave}
+                    disabled={isLoading}
+                    className={primaryBtn}
+                  >
+                    {isLoading ? "Saving" : "Save changes"}
+                  </button>
+                  <button onClick={cancelUserEdit} className={ghostBtn}>
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+          </section>
+
+          {/* Password */}
+          <section className="border-t border-line p-7">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="font-display text-lg font-semibold text-ink">
+                  Password
+                </h3>
+                <p className="mt-1 text-sm text-muted">
+                  A strong password keeps your notes yours.
+                </p>
+              </div>
+              <button
+                onClick={() => setIsPasswordOverlayOpen(true)}
+                className={secondaryBtn}
+              >
+                Change password
+              </button>
+            </div>
+          </section>
+
+          {/* Sign out */}
+          <section className="flex flex-col gap-4 border-t border-line p-7 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 className="font-display text-lg font-semibold text-ink">
+                Sign out
+              </h3>
+              <p className="mt-1 text-sm text-muted">
+                End your session on this device.
               </p>
             </div>
-          </div>
+            <button
+              onClick={handleSignOut}
+              className="rounded-lg border border-line bg-paper px-4 py-2 text-sm font-medium text-danger transition-colors hover:border-danger hover:bg-danger/10"
+            >
+              Sign out
+            </button>
+          </section>
         </div>
-
-        {/* Change Password Overlay */}
-        <ChangePasswordOverlay
-          isOpen={isPasswordOverlayOpen}
-          onClose={() => setIsPasswordOverlayOpen(false)}
-          onSubmit={changePassword}
-        />
       </div>
+
+      <ChangePasswordOverlay
+        isOpen={isPasswordOverlayOpen}
+        onClose={() => setIsPasswordOverlayOpen(false)}
+        onSubmit={changePassword}
+      />
     </div>
   );
 }

@@ -9,11 +9,9 @@ import Login from "./pages/Login.jsx";
 import Home from "./pages/Home.jsx";
 import Account from "./pages/Account.jsx";
 import Signup from "./pages/Signup.jsx";
-import useTheme from "./utils/useTheme.jsx";
+import useDarkMode from "./utils/useDarkMode.js";
 import { useAppStore } from "./store.js";
 import { useEffect } from "react";
-// import { useEffect } from "react";
-// import apiFetch from "./utils/apiClient.js";
 
 function ProtectedRoute({ children }) {
   const { user } = useAppStore();
@@ -30,7 +28,8 @@ function App() {
     fetchUser();
   }, [fetchUser]);
 
-  useTheme();
+  // Keep the theme applied across every route.
+  useDarkMode();
 
   return (
     <Router>
