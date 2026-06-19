@@ -33,7 +33,7 @@ export default function Header({ isDark, toggleTheme, isSidebar, setIsSidebar })
         <PanelLeft className="h-5 w-5" />
       </button>
 
-      <Wordmark to="/" caret />
+      <Wordmark to="/" />
 
       <div className="flex items-center gap-1.5">
         <button

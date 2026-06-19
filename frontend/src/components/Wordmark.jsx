@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 
-// Wordmark. The blinking caret signature appears on the landing hero and the
-// in-app header (pass `caret`); elsewhere the accent on "Notes" carries it.
+// Wordmark. The accent on "Notes" carries the brand. The blinking caret lives
+// only on the landing hero headline; the optional `caret` prop stays available
+// but is intentionally unused here.
 const SIZES = {
   sm: { text: "text-lg", caret: "h-[0.9rem]" },
   md: { text: "text-[1.35rem]", caret: "h-[1.05rem]" },
