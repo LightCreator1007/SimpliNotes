@@ -5,6 +5,10 @@ import apiFetch from "./utils/apiClient";
 export const useAppStore = create((set, get) => ({
   user: null,
   setUser: (user) => set({ user }),
+  // False until the first session check (fetchUser) resolves. ProtectedRoute
+  // waits on this so a valid session restored from cookies isn't mistaken for
+  // "logged out" during the initial async fetch.
+  authChecked: false,
   activeNoteId: null,
   setActiveNoteId: (id) => set({ activeNoteId: id }),
   notes: [],
@@ -24,10 +28,10 @@ export const useAppStore = create((set, get) => ({
         throw new Error(`Failed to fetch user: ${res.status} ${text}`);
       }
       const body = await res.json();
-      set({ user: body.data, loading: false });
+      set({ user: body.data, loading: false, authChecked: true });
     } catch (err) {
       console.error(err);
-      set({ error: err.message, loading: false });
+      set({ error: err.message, loading: false, authChecked: true });
     }
   },
 

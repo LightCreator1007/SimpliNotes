@@ -14,7 +14,12 @@ import { useAppStore } from "./store.js";
 import { useEffect } from "react";
 
 function ProtectedRoute({ children }) {
-  const { user } = useAppStore();
+  const { user, authChecked } = useAppStore();
+  // Don't redirect until the initial session check has resolved, otherwise a
+  // session being restored from cookies flashes to /login on reload.
+  if (!authChecked) {
+    return null;
+  }
   if (!user) {
     return <Navigate to="/login" replace />;
   }
